@@ -1,0 +1,33 @@
+
+{{!-- ciclos if y for each--}}
+
+{{!-- si hay productos: --}}
+    <h1 style="margin-left: 20px; margin-top: 20px">Welcome to the Home!</h1>
+
+
+{{#if products.length}}
+    {{#each products}}
+    <div class="card" style="width: 18rem; margin-left: 20px; margin-bottom: 20px">
+        <img src={{products.thumbnail}} class="card-img-top" alt="img">
+        <div class="card-body">
+            <h5 class="card-title">{{products.title}}</h5>
+            <p class="card-text">{{products.description}}</p>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">Price: {{products.price}}</li>
+            <li class="list-group-item">Stock: {{products.stock}}</li>
+            <li class="list-group-item">Category: {{products.category}}</li>
+        </ul>
+    </div>
+    {{/each}}
+{{!-- si no hay productos: --}}
+{{else}}
+<h2>Products not found</h2>
+{{/if}}
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
