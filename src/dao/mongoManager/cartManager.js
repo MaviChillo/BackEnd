@@ -2,7 +2,7 @@ import {cartsModel} from '../models/carts.model.js'
 
 export class CartManager {
 
-    async getCarts(){
+    async findAll(){
         try {
             const carts = await cartsModel.find()
             return carts
@@ -20,7 +20,7 @@ export class CartManager {
         }
     }
 
-    async getCartById(cartId){
+    async findCartById(cartId){
         try {
             const cart = await cartsModel.find({_id:cartId})
             if(cart){
@@ -36,24 +36,44 @@ export class CartManager {
     }
 
 
-    async addProdToCart(cartId, body) {
+    async addProdToCart(id, idProduct) {
         try {
-            const cart = await cartsModel.findById(cartId);
-            const products = body.products;
-            cart.products = [...cart.products, ...products];
-            await cart.save();
-            const updatedCart = await cartsModel.findByIdAndUpdate(cartId, cart);
-            console.log("updatedCart:",updatedCart)
-            return updatedCart;
+            const cart = await cartsModel.findById(id);
+            const product = { product : idProduct}
+            if(!cart){
+                return console.log('cart not found')
+            }else{
+                cart.products.push(product)
+                cart.save()
+                return cart
+            }
         } catch (error) {
             throw new Error(error);
         }
     }
 
 
-    async emptyCart(cartId){
+    async updateProductQuantity(id, prodId, quantity) {
         try {
-            const cart = await cartsModel.findById(cartId)
+            const cart = await this.getCartById(id);
+            const product = cart.products.find((product) => product._id == prodId);
+            if (!cart) {
+                return console.log("Cart not found");
+            } else {
+            product.quantity = quantity;
+            cart.save();
+            return cart;
+            }
+        } catch (error) {
+            console.log(error);
+            throw new Error(error);
+        }
+    }
+
+
+    async emptyCart(id){
+        try {
+            const cart = await cartsModel.findById(id)
             cart.products = []
             await cart.save()
             return cart
@@ -72,6 +92,15 @@ export class CartManager {
             throw new Error(error);
         }
     }
+
+    async deleteCart(id) {
+        try {
+            const cart = await cartsModel.findByIdAndDelete(id);
+            return cart;
+        } catch (error) {
+            console.log(error);
+        }
+    } 
 
 
     // async addProductToCartById(idCart,idProduct,quantity){

@@ -1,19 +1,10 @@
-import { Router } from 'express'
-// import {ProductManager} from '../src/dao/fileManager/productManager.js'
-import {ProductManager} from '../src/dao/mongoManager/productManager.js'
-import { upload } from '../middlewares/multer.js'
-import { productsModel } from '../src/dao/models/products.model.js'
+import { getProducts, addOne, getProdById, getProdByIdAndUpdate, getProdByIdAndDelete } from "../services/product.services.js";
+import {productsModel} from '../dao/models/products.model.js';
 
-const productRouter = Router()
-// const productManager = new ProductManager('../src/archivos/products.json') 
-const productManager = new ProductManager() 
-
-//get 
-
-productRouter.get('/',async(req,res)=>{
+export async function getAllProducts(req,res){
     try {
         const {limit=10, page=1, category} = req.query //default 10 y 1
-        const getProds = await productManager.getProducts()
+        const getProds = await getProducts()
         const productsInfo = await productsModel.paginate({category}, {limit, page})
         if(!limit || !page || !category){
             res.json(getProds)
@@ -72,69 +63,62 @@ productRouter.get('/',async(req,res)=>{
             }
         }
         }
-        // /?limit=1&page=1
     } catch (error) {
-        res.json({error, status: 'error'})
+        res.status(500).json({error})
     }
-})
+}
 
-productRouter.get('/:idProduct',async(req,res)=>{
-    const {idProduct} = req.params
-    console.log(idProduct)
+export async function getProductById(req, res) {
     try {
-        const product = await productManager.getProductById(idProduct)
-        console.log(product)
-        if(product){
-            res.json({product})
+        const product = await getProdById(req.params.idProduct);
+    if(product){
+        res.json({ product });
     }else{
         res.send('Producto no encontrado')
     }
-} catch (error) {
-    res.send(error)
+    } catch (error) {
+        res.status(500).json({error})
+    }
 }
-})
 
-
-//post
-
-productRouter.post('/', upload.single('file'), async(req, res) => {
-    const product = req.body
-    console.log(product)
-    const addNewProduct = await productManager.addProduct(product)
-    console.log(addNewProduct)
-    res.json({ message: 'Producto agregado con exito', addNewProduct })
-})
-
-//put 
-
-productRouter.put('/:idProduct', async(req, res) => {
-    const {idProduct} = req.params
-    const product = req.body
+export async function AddOneProduct(req,res){
     try {
-        const updateProduct = await productManager.updateProduct(idProduct, ...product)
-        console.log(updateProduct)
-        res.json({ message: 'Producto modificado con exito'})
+        const product = req.body
+        // console.log(product)
+        const addNewProduct = await addOne(product)
+        console.log(addNewProduct)
+        res.json({ message: 'Producto agregado con exito', addNewProduct })
     } catch (error) {
-        console.log('error')
-        return error
+        res.status(500).json({error})
     }
-})
+}
 
-//delete
-
-productRouter.delete('/:idProduct', async(req, res) => {
-    const {idProduct} = req.params
+export async function updateProdById(req, res) {
+    const id = req.params.idProduct
+    const obj = req.body
     try {
-        const deleteProduct = await productManager.deleteProduct(idProduct)
-        console.log(deleteProduct)
-        res.json({ message: 'Producto eliminado con exito'})
+        const updateProd = await getProdByIdAndUpdate(id, obj)
+        const updatedProd = await getProdById(id)
+        if(updateProd){
+            res.json({ message: 'Producto actualizado con exito', updatedProd })
+        }else{
+            res.json({message:"producto no encontrado"})
+        }
     } catch (error) {
-        console.log('error')
-        return error
+        res.status(500).json({error})
     }
-})
+}
 
-
-
-
-export default productRouter
+export async function deleteProdById(req, res) {
+    const id = req.params.idProduct
+    try {
+        const deleteProd = await getProdByIdAndDelete(id)
+        if(deleteProd){
+            res.json({ message: 'Producto borrado con exito', deleteProd })
+        }else{
+            res.json({message:"producto no encontrado"})
+        }
+    } catch (error) {
+        res.status(500).json({error})
+    }
+}
