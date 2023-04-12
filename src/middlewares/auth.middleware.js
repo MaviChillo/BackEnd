@@ -19,7 +19,7 @@ export function isLogged(req, res, next){
 }
 
 export function isAdmin(req, res, next) {
-    if(req.session.admin){
+    if(req.session.role){
         next()
     } else {
         res.redirect('/products')

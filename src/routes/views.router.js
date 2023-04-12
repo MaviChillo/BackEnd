@@ -28,7 +28,7 @@ viewsRouter.get('/realtimeproducts',async (req,res)=>{
     res.render('realTimeProducts', {products})
 })
 
-viewsRouter.get('/admin',auth,isAdmin,async(req,res)=>{
+viewsRouter.get('/admin',auth, isAdmin,async(req,res)=>{
     try {
         // /?limit=1&page=1
         const {limit=10, page=1, category} = req.query //default 10 y 1
@@ -90,9 +90,9 @@ viewsRouter.get('/errorLogin', (req, res)=>{
   res.render('errorLogin')
 })
 
-viewsRouter.get('/admin', (req, res)=>{
-  res.render('admin')
-})
+// viewsRouter.get('/admin', (req, res)=>{
+//   res.render('admin')
+// })
 
 
 

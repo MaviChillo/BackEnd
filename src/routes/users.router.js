@@ -14,7 +14,7 @@ const usersRouter = Router()
 
 usersRouter.post('/signup', signupUser)
 
-usersRouter.post('login', loginUser)
+usersRouter.post('/login', loginUser)
 
 usersRouter.get(
     '/loginGithub',
