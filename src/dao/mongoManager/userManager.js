@@ -20,10 +20,9 @@ export default class UsersManager{
         }
     }
 
-    async addUser(first_name, last_name, email, age, password, role){
+    async addUser(obj){
         try {
-            const user = {first_name,last_name,email,age,password,role}
-            const newUser = await usersModel.create(user)
+            const newUser = await usersModel.create(obj)
             return newUser
         } catch (error) {
             return error

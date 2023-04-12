@@ -1,23 +1,24 @@
 import { usersModel } from '../dao/models/users.model.js';
 import {hashPassword, comparePasswords, generateToken} from '../../utils.js';
-// import {addOneUser} from '../services/users.services.js';
+import {addOneUser} from '../services/users.services.js';
 
 
 export async function signupUser(req,res){
-    const {email, password} = req.body
-    const user = await usersModel.find({email})
-    if(user.length!==0){
-        res.redirect("/errorSignup")
+    try {
+        const {email, password} = req.body
+        const user = await usersModel.find({email})
+        if(user.length!==0){
+            res.redirect("/errorSignup")
+        }
+        const hashNewPassword = await hashPassword(password)
+        const newUser = {...req.body, password:hashNewPassword}
+        //guardado del hash
+        await addOneUser(newUser)
+        console.log('user',newUser)
+        res.redirect('/login').json({newUser})
+    } catch (error) {
+        return error
     }
-    const hashNewPassword = await hashPassword(password)
-    const newUser = {...req.body, password:hashNewPassword}
-    //guardado del hash
-    const newUserBD = await usersModel.create(newUser)
-    res.redirect('/login')
-    return newUserBD
-    // if(newUserBD){
-    // }
-
 }
 
 export async function loginUser(req,res){

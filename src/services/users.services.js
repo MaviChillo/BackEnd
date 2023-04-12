@@ -20,9 +20,9 @@ export async function getUserById(id){
     }
 }
 
-export async function addOneUser(first_name, last_name, email, age, password, role){
+export async function addOneUser(obj){
     try {
-        const newUser = await userManager.addUser(first_name, last_name, email, age, password, role)
+        const newUser = await userManager.addUser(obj)
         return newUser
     } catch (error) {
         return error
