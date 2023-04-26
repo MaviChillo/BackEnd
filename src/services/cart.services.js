@@ -29,9 +29,9 @@ export async function getCartById(id){
     }
 }
 
-export async function addProdToCart(id, idProduct){
+export async function addProdToCart(cartId, products){
     try {
-        const cart = await cartManager.addProdToCart(id, idProduct)
+        const cart = await cartManager.addProdsToCart(cartId, products)
         return cart
     } catch (error) {
         return error

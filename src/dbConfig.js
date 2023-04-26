@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
+import config from "./config.js";
 
-const URI_MONGO = 'mongodb+srv://MaviChillo:mimamamemima1@cluster0.ijd1vjv.mongodb.net/ecommerce?retryWrites=true&w=majority'
 
 mongoose.set('strictQuery', true);
-mongoose.connect(URI_MONGO, (error) =>{
+mongoose.connect(config.mongo_uri, (error) =>{
     if(error){
         console.log(error)
     }else{

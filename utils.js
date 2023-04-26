@@ -1,4 +1,4 @@
-// dirName
+// dirname
 import {dirname} from 'path'
 import { fileURLToPath } from 'url'
 import bcrypt from 'bcrypt'
@@ -18,4 +18,10 @@ export const comparePasswords = async (password, hashedPassword)=>{
 export const generateToken = (user)=>{
     const token = jwt.sign({user}, 'secretJWT')
     return token
+}
+
+export const verifyToken = (req,res)=>{
+    const token = req?.cookie?.token
+    const verify = jwt.verify(token, 'secretJWT')
+    return verify
 }

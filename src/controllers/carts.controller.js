@@ -1,3 +1,4 @@
+import { productsModel } from '../dao/models/products.model.js';
 import {getCarts, addOne, getCartById, addProdToCart, updateProductQuantity, emptyCart, delProdFromCart, deleteCart} from '../services/cart.services.js';
 
 export async function getAllCarts(req,res){
@@ -42,7 +43,22 @@ export async function addProdsToCart(req, res){
     try {
         const {cartId} = req.params
         const products = await req.body
-        const cartMod = await addProdToCart(cartId, products)
+        const cartdb = await getCartById(cartId)
+        // console.log('cartdb',cartdb)
+        if(!cartdb){
+            return res.json({message: 'Cart not found'})
+        }
+        const prods = cartdb.products.map((p)=>p.product)
+        // console.log('prods',prods)
+        const productdb = await productsModel.findById(prods)
+        // console.log('productdb',productdb)
+        // console.log('productdb',productdb)
+        if(cartdb.products.find(
+            (p) => p.product.toString() === productdb._id.toString()
+        )){
+            return res.json({message: 'product already in the cart'})
+        }
+        const cartMod = await addProdToCart(cartId, products, {new:true})
         res.json({message: 'product added successfully', newCart: cartMod})
     } catch (error) {
         res.status(500).json(error)
@@ -57,6 +73,28 @@ export async function updateProductsQuantity(req,res){
         res.json({message: "product's quantity updated successfully", updatedCart})
     } catch (error) {
         res.status(500).json(error)
+    }
+}
+
+
+export async function purchaseCart(req,res){
+    try {
+        const {cartId} = req.params
+        const cart = await getCartById(cartId)
+        console.log('cart',cart)
+        if(!cart){
+            res.json({message: 'Cart not found'})
+        }
+        const prods = cart.products.map((p)=>p.product)
+        console.log('prods', prods)
+        if(!prods){
+            res.json({message: 'The cart is empty'})
+        }else{
+            res.json({message: 'oki'})
+        }
+    } catch (error) {
+        res.status(500).json(error)
+        
     }
 }
 

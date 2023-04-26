@@ -13,6 +13,7 @@ import { messagesModel } from "./dao/models/messages.model.js";
 import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import passport from 'passport'
+import config from './config.js'
 
 const app = express()
 
@@ -60,15 +61,13 @@ app.use('/users', usersRouter)
 app.use('/chat', chatRouter)
 
 
-const PORT = 8080
-
-const httpServer = app.listen(PORT, () => {
-  console.log(`Escuchando al puerto ${PORT}`)
+const httpServer = app.listen(config.port, () => {
+  console.log(`Escuchando al puerto ${config.port}`)
 })
 
-const mensajes = []
 
 const socketServer = new Server(httpServer) 
+const mensajes = []
 
 socketServer.on('connection', (socket)=>{
     console.log(`Usuario conectado: ${socket.id}`)
@@ -82,6 +81,7 @@ socketServer.on('connection', (socket)=>{
     socket.on('mensaje', info=>{
       mensajes.push(info)
       socketServer.emit('chat', mensajes)
+      // console.log('mensajes', mensajes)
       async function addMessage(){
         try {
           const newMessage = await messagesModel.create(info)

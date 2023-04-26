@@ -2,6 +2,7 @@ import { Router } from "express";
 import passport from "passport";
 import '../passport/passportStrategies.js'
 import { signupUser, loginUser, getGithub, logout } from "../controllers/users.controller.js";
+// import { isUser } from "../middlewares/auth.middleware.js";
 // import { generateToken } from "../../utils.js";
 // import jwt from 'jsonwebtoken';
 // import {ProductManager} from '../src/dao/mongoManager/productManager.js'
@@ -11,10 +12,10 @@ import { signupUser, loginUser, getGithub, logout } from "../controllers/users.c
 const usersRouter = Router()
 // const productManager = new ProductManager() 
 
-
 usersRouter.post('/signup', signupUser)
 
 usersRouter.post('/login', loginUser)
+// admin: 'adminCoder@coder.com','adminCod3r123'
 
 usersRouter.get(
     '/loginGithub',

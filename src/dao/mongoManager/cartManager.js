@@ -1,4 +1,5 @@
 import {cartsModel} from '../models/carts.model.js'
+import {ticketModel} from '../models/ticket.model.js'
 
 export class CartManager {
 
@@ -22,9 +23,9 @@ export class CartManager {
 
     async findCartById(cartId){
         try {
-            const cart = await cartsModel.find({_id:cartId})
+            const cart = await cartsModel.findOne({_id:cartId})
             if(cart){
-                console.log(cart)
+                // console.log(cart)
                 return cart;
             } else{
                 return 'Cart not found'
@@ -36,17 +37,14 @@ export class CartManager {
     }
 
 
-    async addProdToCart(id, idProduct) {
+    async addProdsToCart(cartId, body) {
         try {
-            const cart = await cartsModel.findById(id);
-            const product = { product : idProduct}
-            if(!cart){
-                return console.log('cart not found')
-            }else{
-                cart.products.push(product)
-                cart.save()
-                return cart
-            }
+            const cart = await cartsModel.findById(cartId)
+            const products = body.products
+            cart.products = [...cart.products, ...products]
+            await cart.save()
+            const updatedCart = await cartsModel.findByIdAndUpdate(cartId, cart)
+            return updatedCart
         } catch (error) {
             throw new Error(error);
         }

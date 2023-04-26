@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import {CartManager} from '../dao/mongoManager/cartManager.js'
-import {getAllCarts, addCart, getCartByID, addProdsToCart, updateProductsQuantity,deleteProdsFromCart, emptyCartById} from '../controllers/carts.controller.js';
+import {getAllCarts, addCart, getCartByID, addProdsToCart, updateProductsQuantity,deleteProdsFromCart, emptyCartById, purchaseCart} from '../controllers/carts.controller.js';
+import { isUser } from '../middlewares/auth.middleware.js'
+
 
 
 const cartRouter = Router()
@@ -17,10 +19,11 @@ cartRouter.get('/:cartId', getCartByID);
 
 cartRouter.post('/', addCart)
 
+cartRouter.post('/:cartId/purchase', purchaseCart)
 
 //put
 
-cartRouter.put('/:cartId', addProdsToCart)
+cartRouter.put('/:cartId', isUser, addProdsToCart)
 
 cartRouter.put('/:cartId/products/:prodId', updateProductsQuantity)
 

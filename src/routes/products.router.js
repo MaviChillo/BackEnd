@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import {ProductManager} from '../dao/mongoManager/productManager.js'
 // import { upload } from '../middlewares/multer.js'
-import { getAllProducts, AddOneProduct, getProductById, updateProdById, deleteProdById} from '../controllers/products.controller.js'
+import { AddOneProduct, getProductById, updateProdById, deleteProdById, getAllProducts} from '../controllers/products.controller.js'
+import { isAdmin } from '../middlewares/auth.middleware.js'
 
 const productRouter = Router()
-const productManager = new ProductManager() 
+
 
 //get 
 
@@ -14,15 +14,15 @@ productRouter.get('/:idProduct', getProductById)
 
 //post
 
-productRouter.post('/', AddOneProduct)
+productRouter.post('/', isAdmin, AddOneProduct)
 
 //put 
 
-productRouter.put('/:idProduct', updateProdById)
+productRouter.put('/:idProduct', isAdmin, updateProdById)
 
 //delete
 
-productRouter.delete('/:idProduct', deleteProdById)
+productRouter.delete('/:idProduct', isAdmin, deleteProdById)
 
 
 export default productRouter

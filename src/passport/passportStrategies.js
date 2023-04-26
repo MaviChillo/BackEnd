@@ -66,7 +66,7 @@ passport.use('githubLogin', new GitHubStrategy({
 
 //passport jwt con token en cookies
 
-const cookieExtractor = (req)=>{
+export const cookieExtractor = (req)=>{
     const token = req?.cookies?.token
     return token
 }

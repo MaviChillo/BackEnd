@@ -1,13 +1,15 @@
-import { getProducts, addOne, getProdById, getProdByIdAndUpdate, getProdByIdAndDelete } from "../services/product.services.js";
+import { ProductServices} from "../services/product.services.js";
 import {productsModel} from '../dao/models/products.model.js';
+
+const productServices = new ProductServices()
 
 export async function getAllProducts(req,res){
     try {
         const {limit=10, page=1, category} = req.query //default 10 y 1
-        const getProds = await getProducts()
+        const getProds = await productServices.getProducts()
         const productsInfo = await productsModel.paginate({category}, {limit, page})
         if(!limit || !page || !category){
-            res.json(getProds)
+            return getProds
         }else{
             if(productsInfo.hasPrevPage === false){
             if(productsInfo.hasNextPage === false){
@@ -64,13 +66,13 @@ export async function getAllProducts(req,res){
         }
         }
     } catch (error) {
-        res.status(500).json({error})
+        console.log(error)
     }
 }
 
 export async function getProductById(req, res) {
     try {
-        const product = await getProdById(req.params.idProduct);
+        const product = await productServices.getProdById(req.params.idProduct);
     if(product){
         res.json({ product });
     }else{
@@ -85,7 +87,7 @@ export async function AddOneProduct(req,res){
     try {
         const product = req.body
         // console.log(product)
-        const addNewProduct = await addOne(product)
+        const addNewProduct = await productServices.addOne(product)
         console.log(addNewProduct)
         res.json({ message: 'Producto agregado con exito', addNewProduct })
     } catch (error) {
@@ -97,8 +99,8 @@ export async function updateProdById(req, res) {
     const id = req.params.idProduct
     const obj = req.body
     try {
-        const updateProd = await getProdByIdAndUpdate(id, obj)
-        const updatedProd = await getProdById(id)
+        const updateProd = await productServices.getProdByIdAndUpdate(id, obj)
+        const updatedProd = await productServices.getProdById(id)
         if(updateProd){
             res.json({ message: 'Producto actualizado con exito', updatedProd })
         }else{
@@ -112,7 +114,7 @@ export async function updateProdById(req, res) {
 export async function deleteProdById(req, res) {
     const id = req.params.idProduct
     try {
-        const deleteProd = await getProdByIdAndDelete(id)
+        const deleteProd = await productServices.getProdByIdAndDelete(id)
         if(deleteProd){
             res.json({ message: 'Producto borrado con exito', deleteProd })
         }else{

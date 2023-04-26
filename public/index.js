@@ -61,9 +61,9 @@ formChat.onsubmit = (e) =>{
 }
 
 
-socketClient.on('chat', mensajes=>{
+socketClient.on('chat', mensajes =>{
     const htmlRender = mensajes.map(e=>{
-        return `<p><strong>${e.nombre}:</strong>${e.mensaje}</p>`
+        return `<p><strong>${e.user}:</strong>${e.message}</p>`
     }).join(' ')
 
     chatParrafo.innerHTML = htmlRender

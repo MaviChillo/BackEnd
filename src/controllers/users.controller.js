@@ -21,6 +21,8 @@ export async function signupUser(req,res){
     }
 }
 
+export const cookies = []
+
 export async function loginUser(req,res){
     const {email, password} = req.body
     const user = await usersModel.find({email})
@@ -37,26 +39,18 @@ export async function loginUser(req,res){
             req.session.last_name = user[0].last_name;
             req.session.age = user[0].age;
             req.session.role = user[0].role;
-            console.log("ROLE",user[0].role)
-            // const user = {
-            //     email: req.session.email,
-            //     first_name: req.session.first_name,
-            //     last_name: req.session.last_name,
-            //     age: req.session.age,
-            //     role: req.session.role
-            // };
-        // const token = generateToken(user)
-        // console.log('token:', token)
-        // res.cookie('token', token)
-        // if(token){
-            if(user[0].role === "Admin"){
-                res.redirect('/admin')
+            const token = generateToken(user)
+            res.cookie('token', token)
+            if(token){
+                cookies.push(token)
+                if(user[0].role === "Admin"){
+                    res.redirect('/admin')
+                }else{
+                    res.redirect('/products')
+                }
             }else{
-                res.redirect('/products')
+                res.send('not authorized')
             }
-        // }else{
-        //     res.send('not authorized')
-        // }
         }else{
             res.redirect('/errorLogin')
         }

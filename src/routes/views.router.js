@@ -5,10 +5,10 @@ import {CartManager} from '../dao/mongoManager/cartManager.js'
 import socketServer from "../app.js";
 import {productsModel} from '../dao/models/products.model.js';
 import { cartsModel } from '../dao/models/carts.model.js';
-import {auth, isLogged, isAdmin} from '../middlewares/auth.middleware.js'
+import {auth, isLogged, isAdmin, isNOTAdmin} from '../middlewares/auth.middleware.js'
+import {getAllProducts} from '../controllers/products.controller.js';
 
 const viewsRouter = Router()
-// const productManager = new ProductManager('./archivos/products.json') 
 const productManager = new ProductManager() 
 const cartManager = new CartManager()
 
@@ -16,7 +16,7 @@ const cartManager = new CartManager()
 //get 
 
 viewsRouter.get('/',async(req,res)=>{
-  const products = await productManager.findProducts()
+  const products = await getAllProducts(req,res)
     res.render('home', {products})
 })
 
@@ -45,7 +45,7 @@ viewsRouter.get('/admin',auth, isAdmin,async(req,res)=>{
     }
 })
 
-viewsRouter.get('/products',auth, async(req,res)=>{
+viewsRouter.get('/products',auth, isNOTAdmin, async(req,res)=>{
     try {
         // /?limit=1&page=1
         const {limit=10, page=1, category} = req.query //default 10 y 1
@@ -89,10 +89,6 @@ viewsRouter.get('/login',isLogged, (req, res)=>{
 viewsRouter.get('/errorLogin', (req, res)=>{
   res.render('errorLogin')
 })
-
-// viewsRouter.get('/admin', (req, res)=>{
-//   res.render('admin')
-// })
 
 
 
