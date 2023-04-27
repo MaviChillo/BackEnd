@@ -79,7 +79,8 @@ export async function getProductById(req, res) {
         res.send('Producto no encontrado')
     }
     } catch (error) {
-        res.status(500).json({error})
+        // res.status(500).json({error})
+        console.log(error)
     }
 }
 
