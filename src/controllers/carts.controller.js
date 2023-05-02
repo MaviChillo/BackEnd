@@ -4,13 +4,19 @@ import { ticketModel } from '../dao/models/ticket.model.js';
 import {getCarts, addOne, getCartById, addProdToCart, updateProductQuantity, emptyCart, delProdFromCart, deleteCart} from '../services/cart.services.js';
 import { cookies } from './users.controller.js';
 import jwt from 'jsonwebtoken';
+import CustomError from './utils/errors/CustomError.js'
+import { ErrorsCause, ErrorsMessage, ErrorsName } from './utils/errors/errors.enum.js'
 
 export async function getAllCarts(req,res){
     try {
         const carts = await getCarts()
         res.status(200).json(carts)
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.GET_CARTS_ERROR, 
+            message: ErrorsMessage.GET_CARTS_ERROR, 
+            cause: ErrorsCause.GET_CARTS_ERROR
+        })
     }
 }
 
@@ -25,7 +31,11 @@ export async function addCart(req,res){
             res.json({message:"Cart created successfully", newCart});
         }
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.ADD_CART_ERROR, 
+            message: ErrorsMessage.ADD_CART_ERROR, 
+            cause: ErrorsCause.ADD_CART_ERROR
+        })
     }
 }
 
@@ -39,7 +49,11 @@ export async function getCartByID(req,res){
             res.json({cart})
         }
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.GET_CART_ID_ERROR, 
+            message: ErrorsMessage.GET_CART_ID_ERROR, 
+            cause: ErrorsCause.GET_CART_ID_ERROR
+        })
     }
 }
 
@@ -63,19 +77,16 @@ export async function addProdsToCart(req, res){
         )){
             return res.json({message: 'product already in the cart'})
         }else{
-            // console.log('stock',productdb.stock)
-            // console.log('quantity', quantity)
-            // if(quantity > productdb.stock){
-            //     res.json({message: 'there is not enough stock'})
-            // }
-                // const newStock = productdb.stock - quantity
-                // await productsModel.findByIdAndUpdate(productdb._id, {stock: newStock})
                 const cartMod = await addProdToCart(cartId, products, {new:true})
                 res.json({message: 'product added successfully', newCart: cartMod})
             
         }
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.ADD_PROD_TO_CART_ERROR, 
+            message: ErrorsMessage.ADD_PROD_TO_CART_ERROR, 
+            cause: ErrorsCause.ADD_PROD_TO_CART_ERROR
+        })
     }
 }
 
@@ -86,13 +97,16 @@ export async function updateProductsQuantity(req,res){
         const updatedCart = await updateProductQuantity(cartId, prodId, quantity)
         res.json({message: "product's quantity updated successfully", updatedCart})
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.UPDATE_PRODS_QUANTITY_ERROR, 
+            message: ErrorsMessage.UPDATE_PRODS_QUANTITY_ERROR, 
+            cause: ErrorsCause.UPDATE_PRODS_QUANTITY_ERROR
+        })
     }
 }
 
 
 export async function purchaseCart(req, res){
-    // console.log('user', user)
     try {
         const {cartId} = req.params
         const cart = await getCartById(cartId)
@@ -100,7 +114,6 @@ export async function purchaseCart(req, res){
             res.json({message: 'Cart not found'})
         }
         const prods = cart.products.map((p)=>p)
-        // console.log('prods', prods)
         let responseSent = false
         if(prods.length === 0){
             res.json({message: 'The cart is empty'})
@@ -158,27 +171,13 @@ export async function purchaseCart(req, res){
                 console.log('in cart', noStockInCart)
                 res.json({ message: "Purchase successful" })
             }
-
-            // prods.forEach(p => {
-            //     productsModel.findById(p.product, function (err, docs) {
-            //     if(err){
-            //         console.log(err)
-            //         res.json({ message: `Product with Id ${p.product} not found`});
-            //         responseSent = true
-            //     }else{
-            //         if(p.quantity<docs.stock){
-            //             res.json({message: `there is not enough stock for ${docs.title}, the stock is: ${docs.stock}. Please lower the stock if you wish to purchase`})
-            //             responseSent = true
-            //         }else{
-            //             console.log('caca')
-            //         }   
-            //     }
-                
-            //     })
-            // });
         }
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.PURCHASE_CART_ERROR, 
+            message: ErrorsMessage.PURCHASE_CART_ERROR, 
+            cause: ErrorsCause.PURCHASE_CART_ERROR
+        })
     }
 }
 
@@ -188,7 +187,11 @@ export async function emptyCartById(req,res){
         const cartEmpty = await emptyCart(cartId)
         res.json({message: 'cart emptied successfully', cartEmpty: cartEmpty})
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.EMPTY_CART_ERROR, 
+            message: ErrorsMessage.EMPTY_CART_ERROR, 
+            cause: ErrorsCause.EMPTY_CART_ERROR
+        })
     }
 }
 
@@ -198,7 +201,11 @@ export async function deleteProdsFromCart(req,res){
         const cart = await delProdFromCart(cartId, prodId)
         res.json({message:"product deleted successfully",cart});
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.DEL_PROD_FROM_CART_ERROR, 
+            message: ErrorsMessage.DEL_PROD_FROM_CART_ERROR, 
+            cause: ErrorsCause.DEL_PROD_FROM_CART_ERROR
+        })
     }
 }
 
@@ -212,7 +219,11 @@ export async function delCart(req,res){
             res.json({message: 'Cart not found'})
         }
     } catch (error) {
-        res.status(500).json(error)
+        CustomError.createCustomError({
+            name: ErrorsName.DELETE_CART_ERROR, 
+            message: ErrorsMessage.DELETE_CART_ERROR, 
+            cause: ErrorsCause.DELETE_CART_ERROR
+        })
     }
 }
 

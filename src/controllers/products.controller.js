@@ -1,5 +1,7 @@
 import { ProductServices} from "../services/product.services.js";
 import {productsModel} from '../dao/models/products.model.js';
+import CustomError from './utils/errors/CustomError.js'
+import { ErrorsCause, ErrorsMessage, ErrorsName } from './utils/errors/errors.enum.js'
 
 const productServices = new ProductServices()
 
@@ -66,7 +68,11 @@ export async function getAllProducts(req,res){
         }
         }
     } catch (error) {
-        console.log(error)
+        CustomError.createCustomError({
+            name: ErrorsName.GET_PRODUCTS_ERROR, 
+            message: ErrorsMessage.GET_PRODUCTS_ERROR, 
+            cause: ErrorsCause.GET_PRODUCTS_ERROR
+        })
     }
 }
 
@@ -79,8 +85,11 @@ export async function getProductById(req, res) {
         res.send('Producto no encontrado')
     }
     } catch (error) {
-        // res.status(500).json({error})
-        console.log(error)
+        CustomError.createCustomError({
+            name: ErrorsName.GET_PRODUCT_ID_ERROR, 
+            message: ErrorsMessage.GET_PRODUCT_ID_ERROR, 
+            cause: ErrorsCause.GET_PRODUCT_ID_ERROR
+        })
     }
 }
 
@@ -92,7 +101,11 @@ export async function AddOneProduct(req,res){
         console.log(addNewProduct)
         res.json({ message: 'Producto agregado con exito', addNewProduct })
     } catch (error) {
-        res.status(500).json({error})
+        CustomError.createCustomError({
+            name: ErrorsName.ADD_PRODUCT_ERROR, 
+            message: ErrorsMessage.ADD_PRODUCT_ERROR, 
+            cause: ErrorsCause.ADD_PRODUCT_ERROR
+        })
     }
 }
 
@@ -108,7 +121,11 @@ export async function updateProdById(req, res) {
             res.json({message:"producto no encontrado"})
         }
     } catch (error) {
-        res.status(500).json({error})
+        CustomError.createCustomError({
+            name: ErrorsName.UPDATE_PRODUCT_ERROR, 
+            message: ErrorsMessage.UPDATE_PRODUCT_ERROR, 
+            cause: ErrorsCause.UPDATE_PRODUCT_ERROR
+        })
     }
 }
 
@@ -122,6 +139,10 @@ export async function deleteProdById(req, res) {
             res.json({message:"producto no encontrado"})
         }
     } catch (error) {
-        res.status(500).json({error})
+        CustomError.createCustomError({
+            name: ErrorsName.DELETE_PRODUCT_ERROR, 
+            message: ErrorsMessage.DELETE_PRODUCT_ERROR, 
+            cause: ErrorsCause.DELETE_PRODUCT_ERROR
+        })
     }
 }

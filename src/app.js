@@ -5,7 +5,8 @@ import viewsRouter from './routes/views.router.js'
 import chatRouter from './routes/chat.router.js'
 import sessionsRouter from './routes/sessions.router.js'
 import usersRouter from './routes/users.router.js'
-import { __dirname } from '../utils.js'
+import mockingRouter from './routes/mocking.router.js'
+import { __dirname } from './utils/utils.js'
 import handlebars from 'express-handlebars'
 import { Server } from 'socket.io'
 import './dbConfig.js'
@@ -14,6 +15,8 @@ import cookieParser from 'cookie-parser'
 import session from 'express-session'
 import passport from 'passport'
 import config from './config.js'
+import { errorMiddleware } from './utils/errors/errors.middleware.js'
+
 
 const app = express()
 
@@ -59,7 +62,11 @@ app.use('/api/carts', cartsRouter)
 app.use('/api/sessions', sessionsRouter)
 app.use('/users', usersRouter)
 app.use('/chat', chatRouter)
+app.use('/mockingproducts', mockingRouter)
 
+
+
+app.use(errorMiddleware)
 
 const httpServer = app.listen(config.port, () => {
   console.log(`Escuchando al puerto ${config.port}`)

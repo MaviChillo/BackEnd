@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/MaviChillo/BackEnd#readme",
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "bcrypt": "^5.1.0",
     "connect-mongo": "^4.6.0",
     "cookie-parser": "^1.4.6",
