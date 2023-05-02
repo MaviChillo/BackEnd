@@ -169,7 +169,7 @@ export async function purchaseCart(req, res){
                 console.log('no stock', noStock)
                 const noStockInCart = await cartsModel.findByIdAndUpdate(cartId, {products:noStock}, {new: true})
                 console.log('in cart', noStockInCart)
-                res.json({ message: "Purchase successful" })
+                res.json({ message: "Purchase successful. Here's your Ticket:", ticket})
             }
         }
     } catch (error) {
