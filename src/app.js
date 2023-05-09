@@ -6,6 +6,7 @@ import chatRouter from './routes/chat.router.js'
 import sessionsRouter from './routes/sessions.router.js'
 import usersRouter from './routes/users.router.js'
 import mockingRouter from './routes/mocking.router.js'
+import loggerRouter from './routes/logger.router.js'
 import { __dirname } from './utils/utils.js'
 import handlebars from 'express-handlebars'
 import { Server } from 'socket.io'
@@ -16,6 +17,7 @@ import session from 'express-session'
 import passport from 'passport'
 import config from './config.js'
 import { errorMiddleware } from './utils/errors/errors.middleware.js'
+import {generateLog} from './middlewares/winston.middleware.js';
 
 
 const app = express()
@@ -63,8 +65,10 @@ app.use('/api/sessions', sessionsRouter)
 app.use('/users', usersRouter)
 app.use('/chat', chatRouter)
 app.use('/mockingproducts', mockingRouter)
+app.use('/loggerTest', loggerRouter)
 
 
+app.use(generateLog)
 
 app.use(errorMiddleware)
 
