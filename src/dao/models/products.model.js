@@ -26,9 +26,14 @@ const productsSchema = new mongoose.Schema({
     category:{
         type: String,
         required: true
+    },
+    owner:{
+        type: String,
+        default: 'adminCoder@coder.com'
     }
 })
 
 productsSchema.plugin(mongoosePaginate)
+
 
 export const productsModel = mongoose.model('Products', productsSchema)

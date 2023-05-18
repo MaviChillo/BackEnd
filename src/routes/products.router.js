@@ -1,7 +1,7 @@
 import { Router } from 'express'
 // import { upload } from '../middlewares/multer.js'
 import { AddOneProduct, getProductById, updateProdById, deleteProdById, getAllProducts} from '../controllers/products.controller.js'
-import { isAdmin } from '../middlewares/auth.middleware.js'
+import { isAdmin, isPremium , isAdminOrPremium} from '../middlewares/auth.middleware.js'
 
 const productRouter = Router()
 
@@ -14,7 +14,7 @@ productRouter.get('/:idProduct', getProductById)
 
 //post
 
-productRouter.post('/', isAdmin, AddOneProduct)
+productRouter.post('/', isAdminOrPremium, AddOneProduct)
 
 //put 
 
@@ -22,7 +22,7 @@ productRouter.put('/:idProduct', isAdmin, updateProdById)
 
 //delete
 
-productRouter.delete('/:idProduct', isAdmin, deleteProdById)
+productRouter.delete('/:idProduct', isAdminOrPremium, deleteProdById)
 
 
 export default productRouter

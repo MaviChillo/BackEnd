@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import CustomError from '../utils/errors/CustomError.js'
 import { ErrorsCause, ErrorsMessage, ErrorsName } from '../utils/errors/errors.enum.js'
 import logger from '../utils/winston.js';
+import config from '../config.js';
 
 export async function getAllCarts(req,res){
     try {
@@ -85,6 +86,16 @@ export async function addProdsToCart(req, res){
             logger.warning('Check product variables')
             res.json({message: 'prod not found'})
         }
+        const token = await cookies[cookies.length - 1]
+        const verify = jwt.verify(token, config.jwt_key)
+        if(verify.user[0].role === 'Premium'){
+            if(productdb.owner === verify.user[0].email){
+                logger.error('Cannot add product')
+                logger.warning('You cannot add to a cart a product that belongs to you')
+                res.json({message: 'Cannot add product'})
+            }
+        }
+
         if(cartdb.products.find(
             (p) => p.product.toString() === newProd
         )){
@@ -93,8 +104,14 @@ export async function addProdsToCart(req, res){
             return res.json({message: 'product already in the cart'})
         }else{
                 const cartMod = await addProdToCart(cartId, products, {new:true})
-                logger.info('Product added successfully')
-                res.json({message: 'product added successfully', newCart: cartMod})
+                if(cartMod){
+                    logger.info('Product added successfully')
+                    res.json({message: 'product added successfully', newCart: cartMod})
+                }else{
+                    logger.error('Product not added')
+                    logger.warning('Product could not be added to the cart')
+                    return res.json({message: 'Product not added'})
+                }
             
         }
     } catch (error) {

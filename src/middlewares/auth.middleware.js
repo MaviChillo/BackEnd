@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { cookies } from '../controllers/users.controller.js'
 import '../passport/passportStrategies.js'
+import config from '../config.js'
 
 
 export function auth(req, res, next){
@@ -26,10 +27,44 @@ export function isLogged(req, res, next){
 export function isAdmin(req, res, next) {
     if(req.session.role === "Admin"){
         next()
-    } else {
+    } 
+    if(req.session.role === "Premium"){
+        res.redirect('/premium')
+    }
+    if(req.session.role === "User"){
         res.redirect('/products')
     }
 }
+
+export function isPremium(req,res,next){
+    if(req.session.role === "Premium"){
+        next()
+    }
+    if(req.session.role === "Admin"){
+        res.redirect('/admin')
+    }
+    if(req.session.role === "User"){
+        res.redirect('/products')
+    }
+}
+
+export function isAdminOrPremium(req, res, next) {
+    if(req.session.role !== "User"){
+        next()
+    }else{
+        res.json({message: 'Not authorized'})
+    }
+}
+
+export function isUserOrPremium(req, res, next) {
+    if(req.session.role !== "Admin"){
+        next()
+    }else{
+        res.json({message: 'Not authorized'})
+    }
+}
+
+
 
 export function isNOTAdmin(req, res, next) {
     if(req.session.role === "User"){
@@ -41,11 +76,8 @@ export function isNOTAdmin(req, res, next) {
 
 export function isUser(req, res, next) {
     const token = cookies[cookies.length - 1]
-    // console.log(token)
     if(token){
-        const verify = jwt.verify(token, 'secretJWT')
-        // console.log(verify)
-        // console.log('user',verify.user[0].role)
+        const verify = jwt.verify(token, config.jwt_key)
         if(verify.user[0].role==='User'){
             next()
         }else{
@@ -53,3 +85,4 @@ export function isUser(req, res, next) {
         }
     }
 }
+

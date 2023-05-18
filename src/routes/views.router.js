@@ -1,11 +1,10 @@
 import { Router } from 'express'
-// import {ProductManager} from '../src/dao/fileManager/productManager.js'
 import {ProductManager} from '../dao/mongoManager/productManager.js'
 import {CartManager} from '../dao/mongoManager/cartManager.js'
 import socketServer from "../app.js";
 import {productsModel} from '../dao/models/products.model.js';
 import { cartsModel } from '../dao/models/carts.model.js';
-import {auth, isLogged, isAdmin, isNOTAdmin} from '../middlewares/auth.middleware.js'
+import {auth, isLogged, isAdmin, isNOTAdmin, isPremium} from '../middlewares/auth.middleware.js'
 import {getAllProducts} from '../controllers/products.controller.js';
 
 const viewsRouter = Router()
@@ -39,7 +38,24 @@ viewsRouter.get('/admin',auth, isAdmin,async(req,res)=>{
           products = await productsModel.find({category}).limit(limit).skip(page-1).lean()
         }
         console.log(products)
-          res.render('admin', {products, email:req.session.email, first_name:req.session.first_name, last_name:req.session.last_name, role: req.session.role})
+          res.render('adminOrPremium', {products, email:req.session.email, first_name:req.session.first_name, last_name:req.session.last_name, role: req.session.role})
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+viewsRouter.get('/premium',auth, isPremium,async(req,res)=>{
+    try {
+        // /?limit=1&page=1
+        const {limit=10, page=1, category} = req.query //default 10 y 1
+        let products 
+        if(!category){
+          products = await productsModel.find().limit(limit).skip(page-1).lean()
+        }else{
+          products = await productsModel.find({category}).limit(limit).skip(page-1).lean()
+        }
+        console.log(products)
+          res.render('adminOrPremium', {products, email:req.session.email, first_name:req.session.first_name, last_name:req.session.last_name, role: req.session.role})
     } catch (error) {
         console.log(error)
     }
@@ -88,6 +104,26 @@ viewsRouter.get('/login',isLogged, (req, res)=>{
 
 viewsRouter.get('/errorLogin', (req, res)=>{
   res.render('errorLogin')
+})
+
+viewsRouter.get('/forgotPassword', (req,res)=>{
+  res.render('forgotPass')
+})
+
+viewsRouter.get('/ChangePassword', (req,res)=>{
+  res.render('changePassword')
+})
+
+viewsRouter.get('/emailSent', (req,res)=>{
+  res.render('emailSent')
+})
+
+viewsRouter.get('/errorChangePassword', (req,res)=>{
+  res.render('errorChangePassword')
+})
+
+viewsRouter.get('/successChangePassword', (req,res)=>{
+  res.render('successChangePassword')
 })
 
 

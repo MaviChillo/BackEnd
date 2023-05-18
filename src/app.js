@@ -7,6 +7,7 @@ import sessionsRouter from './routes/sessions.router.js'
 import usersRouter from './routes/users.router.js'
 import mockingRouter from './routes/mocking.router.js'
 import loggerRouter from './routes/logger.router.js'
+import messagesRouter from './routes/messages.router.js'
 import { __dirname } from './utils/utils.js'
 import handlebars from 'express-handlebars'
 import { Server } from 'socket.io'
@@ -31,13 +32,13 @@ import mongoStore from 'connect-mongo'
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-app.use(express.static(__dirname+'/public'))
+app.use(express.static(__dirname+'/../public'))
 app.use(cookieParser())
 
 //handlebars
 app.engine('handlebars', handlebars.engine())
 app.set('view engine', 'handlebars')
-app.set('views', __dirname + '/src/views')
+app.set('views', __dirname + '/../views')
 
 
 //session mongo
@@ -66,6 +67,7 @@ app.use('/users', usersRouter)
 app.use('/chat', chatRouter)
 app.use('/mockingproducts', mockingRouter)
 app.use('/loggerTest', loggerRouter)
+app.use('/messages', messagesRouter)
 
 
 app.use(generateLog)
@@ -92,7 +94,6 @@ socketServer.on('connection', (socket)=>{
     socket.on('mensaje', info=>{
       mensajes.push(info)
       socketServer.emit('chat', mensajes)
-      // console.log('mensajes', mensajes)
       async function addMessage(){
         try {
           const newMessage = await messagesModel.create(info)

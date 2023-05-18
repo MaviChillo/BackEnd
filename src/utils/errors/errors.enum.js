@@ -20,6 +20,8 @@ export const ErrorsName ={
     SIGNUP_USER_ERROR: 'Could not singup',
     LOGIN_USER_ERROR: 'Could not login',
     LOGOUT_USER_ERROR: 'Could not logout',
+    //messages
+    FORGOT_PASS_ERROR: 'Could not send email'
 }
 
 export const ErrorsMessage ={
@@ -43,6 +45,8 @@ export const ErrorsMessage ={
     SIGNUP_USER_ERROR: 'User could not be signed up',
     LOGIN_USER_ERROR: 'User could not be logged in',
     LOGOUT_USER_ERROR: 'User could not be logged out',
+    //messages
+    FORGOT_PASS_ERROR: 'Email could not be sent'
 }
 
 export const ErrorsCause ={
@@ -65,4 +69,6 @@ export const ErrorsCause ={
     //users
     SIGNUP_USER_ERROR: 'Error caused in the users.controller.js, function signupUser. Please check.',LOGIN_USER_ERROR: 'Error caused in the users.controller.js, function loginUser. Please check.',
     LOGOUT_USER_ERROR: 'Error caused in the users.controller.js, function logout. Please check.',
+    //messages
+    FORGOT_PASS_ERROR: 'Error caused in the messages.controller.js, function ForgotPass. Please check.'
 }
