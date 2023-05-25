@@ -1,0 +1,298 @@
+paths:
+  /api/carts:
+    get:
+      tags:
+        - Carts
+      summary: Returns all carts
+      responses:
+        "200":
+          description: All carts
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Carts"
+              example:
+                _id: ObjectId('6446e508a5b206c3c59359a5')
+                products:
+                  [
+                    {
+                      product: ObjectId('64659c0d0f5c8bf955653bfa'),
+                      quantity: 1,
+                      _id: ObjectId('646690f3951e6eb63a3aa31a'),
+                    },
+                  ]
+                __v: 122
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+    post:
+      tags:
+        - Carts
+      summary: Creates a cart
+      responses:
+        "200":
+          description: Creates a cart
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Carts"
+              example:
+                _id: ObjectId('6446e508a5b206c3c59359a5')
+                products: []
+                __v: 122
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+  /api/carts/{id}:
+    get:
+      tags:
+        - Carts
+      summary: Returns one cart by id
+      description: "If you want to get a cart by id you have to send a petition to this endpoint with the required data bellow"
+      parameters:
+        - name: id
+          in: path
+          description: Cart identifier
+      responses:
+        "200":
+          description: Gets the cart with that id
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Carts"
+              example:
+                _id: ObjectId('6446e508a5b206c3c59359a5')
+                products:
+                  [
+                    {
+                      product: ObjectId('64659c0d0f5c8bf955653bfa'),
+                      quantity: 1,
+                      _id: ObjectId('646690f3951e6eb63a3aa31a'),
+                    },
+                  ]
+                __v: 122
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+    put:
+      tags:
+        - Carts
+      summary: Adds products to a cart by id
+      description: "If you want to add products to a cart you have to send a petition to this endpoint with the required data bellow. In the request body send the products' data. Keep in mind that you can't add a product you own."
+      parameters:
+        - name: id
+          in: path
+          description: Cart identifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Carts"
+            example:
+              products: [{ product: 64659ce40f5c8bf955653c07, quantity: 1 }]
+      responses:
+        "200":
+          description: Add products to a cart
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Carts"
+              example:
+                _id: ObjectId('6446e508a5b206c3c59359a5')
+                products:
+                  [
+                    {
+                      product: ObjectId('64659ce40f5c8bf955653c07'),
+                      quantity: 1,
+                      _id: ObjectId('646fb1b4d59d3f7c28ee36a7'),
+                    },
+                  ]
+                __v: 122
+        "400":
+          description: Bad request.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+    delete:
+      tags:
+        - Carts
+      summary: Empties one cart by id
+      description: "If you want to empty a cart by id you have to send a petition to this endpoint with the required data bellow"
+      parameters:
+        - name: id
+          in: path
+          description: Cart identifier
+      responses:
+        "200":
+          description: Empties the cart with that id
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Carts"
+              example:
+                _id: ObjectId('6446e508a5b206c3c59359a5')
+                products: []
+                __v: 122
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+  /api/carts/{id1}/product/{id2}:
+    put:
+      tags:
+        - Carts
+      summary: Updates a product's quantity in a cart by id
+      description: "If you want to update a product's quantity in a cart you have to send a petition to this endpoint with the required data bellow. In the request body send the products' quantity."
+      parameters:
+        - name: id1
+          in: path
+          description: Cart identifier
+        - name: id2
+          in: path
+          description: Product identifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Carts"
+            example:
+              quantity: 5
+      responses:
+        "200":
+          description: Updates a product's quantity in a cart
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Carts"
+              example:
+                _id: ObjectId('6446e508a5b206c3c59359a5')
+                products:
+                  [
+                    {
+                      product: ObjectId('64659ce40f5c8bf955653c07'),
+                      quantity: 5,
+                      _id: ObjectId('646fb1b4d59d3f7c28ee36a7'),
+                    },
+                  ]
+                __v: 122
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+    delete:
+      tags:
+        - Carts
+      summary: Deletes a product from a cart by id
+      description: "If you want to delete a product from a cart you have to send a petition to this endpoint with the required data bellow."
+      parameters:
+        - name: id1
+          in: path
+          description: Cart identifier
+        - name: id2
+          in: path
+          description: Product identifier
+      responses:
+        "200":
+          description: Deletes a product from a cart.
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Carts"
+              example:
+                _id: ObjectId('6446e508a5b206c3c59359a5')
+                products: []
+                __v: 122
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+  /api/carts/{id}/purchase:
+    post:
+      tags:
+        - Carts
+      summary: Purchase a cart by id
+      description: "If you want to purchase a cart you have to send a petition to this endpoint with the required data bellow."
+      parameters:
+        - name: id
+          in: path
+          description: Cart identifier
+      responses:
+        "200":
+          description: Purchase a cart
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Carts"
+              example:
+                ticket:
+                  {
+                    code: "CW2V80ZKN2",
+                    purchase_datetime: "2023-05-25T19:58:57.809Z",
+                    amount: 600,
+                    purchaser: "mavi.chillo@gmail.com",
+                    _id: "646fbe2b66c303080ef38f90",
+                    __v: 0,
+                  }
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+
+components:
+  schemas:
+    Carts:
+      type: object
+      properties:
+        products:
+          product:
+            type: mongoose ObjectId,
+            ref: Products
+          quantity:
+            type: number
+      example:
+        _id: ObjectId('6446e508a5b206c3c59359a5')
+        products:
+          [
+            {
+              product: ObjectId('64659c0d0f5c8bf955653bfa'),
+              quantity: 1,
+              _id: ObjectId('646690f3951e6eb63a3aa31a'),
+            },
+          ]
+        __v: 122

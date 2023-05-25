@@ -1,0 +1,213 @@
+paths:
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: Returns all products
+      responses:
+        "200":
+          description: All products
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Products"
+              example:
+                _id: ObjectId('64659c0d0f5c8bf955653bfa')
+                title: "iPhone 8"
+                description: "iPhone 8 Black"
+                code: "K5RB9"
+                price: 500
+                stock: 25
+                category: "phone"
+                owner: "mavi.chillo@gmail.com"
+                __v: 0
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+    post:
+      tags:
+        - Products
+      summary: Adds one product
+      description: "If you want to add a product you have to send a petition to this endpoint with the required data bellow"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Products"
+            example:
+              title: "iPhone 8"
+              description: "iPhone 8 Black"
+              price: 500
+              stock: 25
+              category: "phone"
+              owner: "mavi.chillo@gmail.com"
+      responses:
+        "200":
+          description: Adds one product
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Products"
+              example:
+                _id: ObjectId('64659c0d0f5c8bf955653bfa')
+                title: "iPhone 8"
+                description: "iPhone 8 Black"
+                code: "K5RB9"
+                price: 500
+                stock: 25
+                category: "phone"
+                owner: "mavi.chillo@gmail.com"
+                __v: 0
+        "400":
+          description: Bad request.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+  /api/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Returns one product by id
+      description: "If you want to get a product by id you have to send a petition to this endpoint with the required data bellow"
+      parameters:
+        - name: id
+          in: path
+          description: Product identifier
+      responses:
+        "200":
+          description: Gets the product with that id
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Products"
+              example:
+                _id: ObjectId('64659c0d0f5c8bf955653bfa')
+                title: "iPhone 8"
+                description: "iPhone 8 Black"
+                code: "K5RB9"
+                price: 500
+                stock: 25
+                category: "phone"
+                owner: "mavi.chillo@gmail.com"
+                __v: 0
+        "400":
+          description: Bad request.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+    put:
+      tags:
+        - Products
+      summary: Update one product by id
+      description: "If you want to update a product you have to send a petition to this endpoint with the required data bellow. In the request body just send the values you want to change"
+      parameters:
+        - name: id
+          in: path
+          description: Product identifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Products"
+            example:
+              description: "iPhone 8 Pink"
+      responses:
+        "200":
+          description: Updates a product's value
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/Products"
+              example:
+                _id: ObjectId('64659c0d0f5c8bf955653bfa')
+                title: "iPhone 8"
+                description: "iPhone 8 Pink"
+                code: "K5RB9"
+                price: 500
+                stock: 25
+                category: "phone"
+                owner: "mavi.chillo@gmail.com"
+                __v: 0
+        "400":
+          description: Bad request.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+    delete:
+      tags:
+        - Products
+      summary: Deletes one product by id
+      description: "If you want to delete a product you have to send a petition to this endpoint with the required data bellow."
+      parameters:
+        - name: id
+          in: path
+          description: Product identifier
+      responses:
+        "200":
+          description: Deletes the product
+        "400":
+          description: Bad request.
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Not Found.
+        "405":
+          description: Invalid Method.
+        "500":
+          description: Unexpected error.
+
+components:
+  schemas:
+    Products:
+      type: object
+      properties:
+        title:
+          type: string
+          required: true
+        description:
+          type: string
+          required: true
+        code:
+          type: string
+          required: true
+          unique: true
+        price:
+          type: number
+          required: true
+        stock:
+          type: number
+          required: true
+        category:
+          type: string
+          required: true
+        owner:
+          type: string
+          default: "adminCoder@coder.com"
+      example:
+        _id: ObjectId('64659c0d0f5c8bf955653bfa')
+        title: "iPhone 8"
+        description: "iPhone 8 Black"
+        code: "K5RB9"
+        price: 500
+        stock: 25
+        category: "phone"
+        owner: "mavi.chillo@gmail.com"
+        __v: 0

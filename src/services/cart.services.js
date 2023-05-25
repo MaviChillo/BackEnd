@@ -38,9 +38,9 @@ export async function addProdToCart(cartId, products){
     }
 }
 
-export async function updateProductQuantity(id, prodId, quantity){
+export async function updateProductQuantity(cartId, prodId, quantity){
     try {
-        const updateProdQ = await cartManager.updateProductQuantity(id, prodId, quantity)
+        const updateProdQ = await cartManager.updateProductQuantity(cartId, prodId, quantity)
         return updateProdQ
     } catch (error) {
         return error

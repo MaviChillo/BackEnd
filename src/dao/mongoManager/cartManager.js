@@ -1,4 +1,5 @@
 import {cartsModel} from '../models/carts.model.js'
+import { productsModel } from '../models/products.model.js'
 import {ticketModel} from '../models/ticket.model.js'
 
 export class CartManager {
@@ -51,17 +52,16 @@ export class CartManager {
     }
 
 
-    async updateProductQuantity(id, prodId, quantity) {
+    async updateProductQuantity(cartId, prodId, quantity) {
         try {
-            const cart = await this.getCartById(id);
-            const product = cart.products.find((product) => product._id == prodId);
+            const cart = await cartsModel.findById({_id:cartId})
+            const product = cart.products.find((p) => p.product.toString() === prodId)
             if (!cart) {
                 return console.log("Cart not found");
-            } else {
+            }
             product.quantity = quantity;
             cart.save();
-            return cart;
-            }
+            return cart
         } catch (error) {
             console.log(error);
             throw new Error(error);

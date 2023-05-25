@@ -19,7 +19,9 @@ import passport from 'passport'
 import config from './config.js'
 import { errorMiddleware } from './utils/errors/errors.middleware.js'
 import {generateLog} from './middlewares/winston.middleware.js';
-
+//swagger
+import swaggerUi from 'swagger-ui-express'
+import { swaggerSetup } from './SwaggerSpecs.js'
 
 const app = express()
 
@@ -32,13 +34,13 @@ import mongoStore from 'connect-mongo'
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
-app.use(express.static(__dirname+'/../public'))
+app.use(express.static(__dirname+'/public'))
 app.use(cookieParser())
 
 //handlebars
 app.engine('handlebars', handlebars.engine())
 app.set('view engine', 'handlebars')
-app.set('views', __dirname + '/../views')
+app.set('views', __dirname + '/views')
 
 
 //session mongo
@@ -68,7 +70,8 @@ app.use('/chat', chatRouter)
 app.use('/mockingproducts', mockingRouter)
 app.use('/loggerTest', loggerRouter)
 app.use('/messages', messagesRouter)
-
+//swagger docs endpoint
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSetup))
 
 app.use(generateLog)
 

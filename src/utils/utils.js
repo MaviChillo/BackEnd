@@ -1,5 +1,5 @@
 // dirname
-import {dirname} from 'path'
+import {dirname, join} from 'path'
 import { fileURLToPath } from 'url'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
@@ -7,7 +7,9 @@ import { faker } from "@faker-js/faker"
 import config from '../config.js'
 
 
-export const __dirname = dirname(fileURLToPath(import.meta.url))
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname = join(dirname(__filename), '..')
+
 
 export const hashPassword = async (password)=>{
     return bcrypt.hashSync(password, 10)

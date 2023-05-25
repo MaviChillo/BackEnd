@@ -128,7 +128,24 @@ export async function updateProductsQuantity(req,res){
     try {
         const {cartId, prodId} = req.params
         const quantity = req.body.quantity
+        const cart = await cartsModel.findById({_id: cartId})
+        if(!cart){
+            logger.error('Cart not found')
+            logger.warning('Check cart variables')
+            return res.json({message: 'Cart not found'})
+        }
+        const prod = await productsModel.findById({_id: prodId})
+        if(!prod){
+            logger.error('Product not found')
+            logger.warning('Check product variables')
+            return res.json({message: 'Product not found'})
+        }
         const updatedCart = await updateProductQuantity(cartId, prodId, quantity)
+        if(!updatedCart){
+            logger.error('Quantity not updated')
+            logger.warning('Quantity could not be updated in the cart')
+            return res.json({message: 'Quantity not updated'})
+        }
         logger.info("Product's quantity updated")
         res.json({message: "product's quantity updated successfully", updatedCart})
     } catch (error) {

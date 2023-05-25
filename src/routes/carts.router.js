@@ -25,7 +25,7 @@ cartRouter.post('/:cartId/purchase', purchaseCart)
 
 cartRouter.put('/:cartId', isUserOrPremium, addProdsToCart)
 
-cartRouter.put('/:cartId/products/:prodId', updateProductsQuantity)
+cartRouter.put('/:cartId/product/:prodId', updateProductsQuantity)
 
 
 //delete
