@@ -32,9 +32,9 @@ export class ProductManager {
         }
     }
 
-    async findByIdAndUpdate(id, obj){
+    async findByIdAndUpdate(id, prod){
         try {
-            const updateProduct = await productsModel.findByIdAndUpdate(id, obj);
+            const updateProduct = await productsModel.findByIdAndUpdate(id, prod);
             return updateProduct;
         } catch (error) {
             console.log(error);

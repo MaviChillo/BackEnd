@@ -66,9 +66,10 @@ export async function delProdFromCart(cartId, prodId){
     }
 }
 
-export async function deleteCart(id){
+export async function deleteCart(cartId){
     try {
-        const delCart = await cartManager.deleteCart(id)
+        const delCart = await cartManager.deleteCart(cartId)
+        return delCart
     } catch (error) {
         return error
     }

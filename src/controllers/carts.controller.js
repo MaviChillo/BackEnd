@@ -291,10 +291,16 @@ export async function deleteProdsFromCart(req,res){
 export async function delCart(req,res){
     try {
         const {cartId} = req.params
+        const cart = await getCartById(cartId)
+        if(!cart){
+            logger.error('Cart not found')
+            logger.warning("Check the cart's id")
+            res.json({message: 'Cart not found'})
+        }
         const deletedCart = await deleteCart(cartId)
         if(deletedCart){
             logger.info('cart deleted successfully')
-            res.json({message:"cart deleted successfully",cart});
+            res.json({message:"cart deleted successfully",deletedCart});
         }else{
             logger.error('Cart not found')
             logger.warning("Check the cart's id")

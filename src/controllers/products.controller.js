@@ -16,7 +16,7 @@ export async function getAllProducts(req,res){
         const getProds = await productServices.getProducts()
         const productsInfo = await productsModel.paginate({category}, {limit, page})
         if(!limit || !page || !category){
-            return getProds
+            res.json(getProds) 
         }else{
             if(productsInfo.hasPrevPage === false){
             if(productsInfo.hasNextPage === false){
@@ -149,6 +149,12 @@ export async function updateProdById(req, res) {
     const id = req.params.idProduct
     const obj = req.body
     try {
+        const find = await productServices.getProdById(id)
+        if(!find){
+            logger.error('Product not found')
+            logger.warning('Check the variables')
+            res.json({message:"product not found"})
+        }
         const updateProd = await productServices.getProdByIdAndUpdate(id, obj)
         const updatedProd = await productServices.getProdById(id)
         if(updateProd){

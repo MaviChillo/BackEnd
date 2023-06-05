@@ -24,6 +24,16 @@ export function isLogged(req, res, next){
     }
 }
 
+export async function isJustAdmin(req, res, next) {
+    const token = await cookies[cookies.length - 1]
+    const verify = jwt.verify(token, config.jwt_key)
+    if(verify.user[0].role === "Admin"){
+        next()
+    }else{
+        res.json({message: 'Not authorized'})
+    }
+}
+
 export function isAdmin(req, res, next) {
     if(req.session.role === "Admin"){
         next()

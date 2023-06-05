@@ -34,9 +34,9 @@ export class ProductServices{
     }
 
 
-    async getProdByIdAndUpdate(id, obj){
+    async getProdByIdAndUpdate(id, prod){
         try {
-            const updateProduct = await productManager.findByIdAndUpdate(id, obj)
+            const updateProduct = await productManager.findByIdAndUpdate(id, prod)
             return updateProduct
         } catch (error) {
             return error

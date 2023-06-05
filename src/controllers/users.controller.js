@@ -11,6 +11,7 @@ import config from '../config.js';
 export async function signupUser(req,res){
     try {
         const {email, password} = req.body
+        console.log(req.body)
         const user = await usersModel.find({email})
         if(user.length!==0){
             logger.error('This user already exists')
@@ -20,9 +21,15 @@ export async function signupUser(req,res){
         const hashNewPassword = await hashPassword(password)
         const newUser = {...req.body, password:hashNewPassword}
         //guardado del hash
-        await addOneUser(newUser)
-        logger.info('Signup successfull')
-        res.redirect('/login').json({newUser})
+        const add = await addOneUser(newUser)
+        if(add){
+            logger.info('Signup successfull')
+            res.redirect('/login')
+            // .json({newUser})
+        }else{
+            logger.error('Could not add user')
+            logger.warning('Check your variables')
+        }
     } catch (error) {
         logger.fatal('Error in signupUser')
         CustomError.createCustomError({

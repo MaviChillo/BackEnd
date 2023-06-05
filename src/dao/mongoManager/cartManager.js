@@ -91,9 +91,9 @@ export class CartManager {
         }
     }
 
-    async deleteCart(id) {
+    async deleteCart(cartId) {
         try {
-            const cart = await cartsModel.findByIdAndDelete(id);
+            const cart = await cartsModel.findByIdAndDelete(cartId);
             return cart;
         } catch (error) {
             console.log(error);
