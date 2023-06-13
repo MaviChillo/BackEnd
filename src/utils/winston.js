@@ -43,7 +43,7 @@ if(config.node_env === 'development'){
         transports: [
             new winston.transports.File({
                 level: 'info',
-                filename: './errors.log',
+                filename: './logs/errors.log',
                 format: winston.format.combine(
                     winston.format.timestamp(),
                     winston.format.prettyPrint(),

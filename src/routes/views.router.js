@@ -126,6 +126,13 @@ viewsRouter.get('/successChangePassword', (req,res)=>{
   res.render('successChangePassword')
 })
 
+viewsRouter.get('/uploadDocs', (req,res)=>{
+  res.render('uploadDocs')
+})
+
+viewsRouter.get('/upgradeToPremium', (req,res)=>{
+  res.render('upgradeToPremium')
+})
 
 
 //post

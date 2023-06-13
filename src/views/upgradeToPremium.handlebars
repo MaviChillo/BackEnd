@@ -1,0 +1,21 @@
+<h1 style="margin-left: 20px;">Upgrade To Premium!</h1>
+<br>
+<h2 style="margin-left: 20px;">In order to upgrade you need to send the following files:</h2>
+<ul style="margin-left: 20px;">
+    <li>
+        <h3>Identification</h3>
+    </li>
+    <li>
+        <h3>Addres Certificate</h3>
+    </li>
+    <li>
+        <h3>Account Certificate</h3>
+    </li>
+</ul>
+
+<form style="margin-left: 20px;" action="/users/:uid/documents" method="post" enctype="multipart/form-data" id="files">
+    Files: <input type="file" name="file" id="file">
+    <br>
+    <br>
+    <input type="submit" value="Submit Files">
+</form>

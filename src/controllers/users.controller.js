@@ -173,6 +173,14 @@ export async function changeRole(req,res){
 }
 
 
+export async function uploadDocs(req,res){
+
+
+    
+    res.send('ok')
+}
+
+
 export async function getGithub(req, res){
     req.session.email = req.user.email;
     req.session.logged = true;
