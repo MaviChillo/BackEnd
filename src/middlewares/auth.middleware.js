@@ -3,7 +3,6 @@ import { cookies } from '../controllers/users.controller.js'
 import '../passport/passportStrategies.js'
 import config from '../config.js'
 
-
 export function auth(req, res, next){
     if(req.session.logged){
         next()
@@ -21,6 +20,14 @@ export function isLogged(req, res, next){
         }
     }else{
         next()
+    }
+}
+
+export function Logged(req, res, next){
+    if(req.session.logged){
+        next()
+    }else{
+        res.redirect('/login')
     }
 }
 

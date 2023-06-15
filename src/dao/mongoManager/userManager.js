@@ -29,10 +29,9 @@ export default class UsersManager{
         }
     }
 
-    async updateUser(id, first_name, last_name, email, age, password, role){
+    async updateUser(_id, obj){
         try {
-            const user = {first_name,last_name,email,age,password,role}
-            const updatedUser = await usersModel.findByIdAndUpdate(id, user)
+            const updatedUser = await usersModel.findByIdAndUpdate(_id, obj)
             return updatedUser
         } catch (error) {
             return error

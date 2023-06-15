@@ -17,7 +17,8 @@ usersRouter.post('/login', loginUser)
 
 usersRouter.post('/changePassword', changePassword)
 
-usersRouter.post('/:uid/documents', upload.single('profile'), uploadDocs)
+const cpUpload = upload.fields([{ name: 'profile', maxCount: 1 }, { name: 'product', maxCount: 10 }, { name: 'identification', maxCount: 1 }, { name: 'address', maxCount: 1 }, { name: 'account', maxCount: 1 }])
+usersRouter.post('/:uid/documents', cpUpload, uploadDocs)
 
 //PUT
 

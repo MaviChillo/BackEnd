@@ -29,9 +29,9 @@ export async function addOneUser(obj){
     }
 }
 
-export async function updateUserById(id, first_name, last_name, email, age, password, role){
+export async function updateUserById(_id, obj){
     try {
-        const updatedUser = await userManager.updateUser(id, first_name, last_name, email, age, password, role)
+        const updatedUser = await userManager.updateUser(_id, obj)
         return updatedUser
     } catch (error) {
         return error
