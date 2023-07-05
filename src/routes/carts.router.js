@@ -23,6 +23,16 @@ cartRouter.post('/:cartId/purchase', purchaseCart)
 //put
 
 cartRouter.put('/:cartId', isUserOrPremium, addProdsToCart)
+// como agregar productos a un carrito por postman o thunder client:
+
+// {
+//     "products":[
+//         {
+//             "product": "id del producto (string)",
+//             "quantity": cantidad del producto (number)
+//         }
+//     ]
+// }
 
 cartRouter.put('/:cartId/product/:prodId', updateProductsQuantity)
 

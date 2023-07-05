@@ -6,13 +6,16 @@ import { upload } from "../middlewares/multer.js";
 
 
 const usersRouter = Router()
-// const productManager = new ProductManager() 
 
 //POST
 
 usersRouter.post('/signup', signupUser)
 
 usersRouter.post('/login', loginUser)
+// users existentes:
+// user: 'lucaslause@gmail.com', '12345'
+// user: 'misha.collins@gmail.com', '12345'
+// premium: 'mavi.chillo@gmail.com', '12345'
 // admin: 'adminCoder@coder.com','adminCod3r123'
 
 usersRouter.post('/changePassword', changePassword)
