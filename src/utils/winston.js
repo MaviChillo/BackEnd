@@ -47,7 +47,6 @@ if(config.node_env === 'development'){
                 format: winston.format.combine(
                     winston.format.timestamp(),
                     winston.format.prettyPrint(),
-                    // winston.format.label({label: 'Este es un log de Stage'})
                 )
             })
         ]

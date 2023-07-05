@@ -1,6 +1,4 @@
 import {cartsModel} from '../models/carts.model.js'
-import { productsModel } from '../models/products.model.js'
-import {ticketModel} from '../models/ticket.model.js'
 
 export class CartManager {
 
@@ -28,7 +26,6 @@ export class CartManager {
         try {
             const cart = await cartsModel.findOne({_id:cartId})
             if(cart){
-                // console.log(cart)
                 return cart;
             } else{
                 return 'Cart not found'

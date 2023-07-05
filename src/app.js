@@ -54,10 +54,8 @@ app.use(session({
   cookie: {maxAge: 60000}
 }))
 
-//trabajar con passport
-  //inicializar
+// passport
   app.use(passport.initialize())
-  //passport va a guardar la info de session
   app.use(passport.session())
 
 // ROUTES

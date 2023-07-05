@@ -6,7 +6,6 @@ import { isUser , isUserOrPremium} from '../middlewares/auth.middleware.js'
 
 
 const cartRouter = Router()
-// const cartManager = new CartManager('../src/archivos/carts.json') 
 const cartManager = new CartManager() 
 
 // get

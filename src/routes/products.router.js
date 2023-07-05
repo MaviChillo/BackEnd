@@ -1,5 +1,4 @@
 import { Router } from 'express'
-// import { upload } from '../middlewares/multer.js'
 import { AddOneProduct, getProductById, updateProdById, deleteProdById, getAllProducts} from '../controllers/products.controller.js'
 import { isAdminOrPremium, isJustAdmin} from '../middlewares/auth.middleware.js'
 
