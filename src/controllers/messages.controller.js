@@ -1,6 +1,5 @@
 import {transporter} from '../messages/nodemailer.js';
-import {usersModel} from '../dao/models/users.model.js';
-import {cookies} from './users.controller.js';
+import { getUser } from './users.controller.js';
 import jwt from 'jsonwebtoken'
 import config from '../config.js';
 import logger from '../utils/winston.js';
@@ -10,7 +9,8 @@ import {ErrorsCause, ErrorsMessage, ErrorsName} from '../utils/errors/errors.enu
 
 export async function ForgotPass(req,res){
     const {email} = req.body
-    const find = await usersModel.find({email})
+    const find = await getUser(email)
+    console.log('find', find)
     if(!find){
         logger.error('User not found')
         logger.warning('This email does not belong to a registered user')
@@ -24,9 +24,9 @@ export async function ForgotPass(req,res){
     }
     res.cookie('token_CP', token)
     const messageOptions = {
-        from:'MaviChillo',
+        from:'Chillo E-Commerce',
         to: email,
-        subject: `Hello ${find[0].first_name} ${find[0].last_name}!`,
+        subject: `Hello ${find.name}!`,
         html: `
         <h3>Click on this link to reset your password</h3>
         <form action="http://localhost:8080/changePassword" method="get">
@@ -41,6 +41,7 @@ export async function ForgotPass(req,res){
     }
     try {
         await transporter.sendMail(messageOptions)
+        logger.info('Email sent')
         res.redirect('/emailSent')
     } catch (error) {
         logger.fatal('Error in ForgotPass')

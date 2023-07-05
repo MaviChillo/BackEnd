@@ -4,7 +4,6 @@ const cards = document.getElementById("cards");
 
 socketClient.on('products', (prods)=>{
     cards.innerHTML = ""
-    // console.log(prods)
     prods.forEach(prod => {
         cards.innerHTML += `
         <div class="card" style="width: 20%; margin-left: 20px; margin-bottom: 20px; border-style: dotted;border-color: black; padding: 20px;">

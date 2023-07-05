@@ -4,11 +4,16 @@
 {{!-- si hay productos: --}}
     <h1 style="margin-left: 20px; margin-top: 20px">Welcome to the Home!</h1>
 
+    <h2 style="margin-left: 20px; margin-top: 20px">Sign up</h2>
+    <button style="margin-left: 20px; margin-top: 20px" onclick="location.href='/signup'">Go to Sign Up</button>
+
+    <h2 style="margin-left: 20px; margin-top: 20px">Log in</h2>
+    <button style="margin-left: 20px; margin-top: 20px" onclick="location.href='/login'">Go to Login</button>
+
 
 {{#if products.length}}
     {{#each products}}
     <div class="card" style="width: 18rem; margin-left: 20px; margin-bottom: 20px">
-        <img src={{products.thumbnail}} class="card-img-top" alt="img">
         <div class="card-body">
             <h5 class="card-title">{{products.title}}</h5>
             <p class="card-text">{{products.description}}</p>

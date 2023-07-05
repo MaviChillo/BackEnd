@@ -2,7 +2,26 @@ import UsersManager from "../dao/mongoManager/userManager.js";
 
 const userManager = new UsersManager()
 
-export async function getProducts(){
+
+export async function getUsers(){
+    try {
+        const users = await userManager.getAllUsers()
+        return users
+    } catch (error) {
+        return error
+    }
+}
+
+export async function getAUser(email){
+    try {
+        const user = await userManager.getUserBy(email)
+        return user
+    } catch (error) {
+        return error
+    }
+}
+
+export async function findUser(){
     try {
         const users = await userManager.findUsers()
         return users
@@ -42,6 +61,15 @@ export async function deleteUserById(id){
     try {
         const deletedUser = await userManager.deleteUser(id)
         return deletedUser
+    } catch (error) {
+        return error
+    }
+}
+
+export async function delInactiveUsers(_id){
+    try {
+        const user = await userManager.delInactUsers(_id)
+        return user
     } catch (error) {
         return error
     }

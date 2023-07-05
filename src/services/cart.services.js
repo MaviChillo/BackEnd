@@ -29,6 +29,15 @@ export async function getCartById(id){
     }
 }
 
+export async function getCartByIdAndUpdate(id, obj){
+    try {
+        const product = await cartManager.findCartByIdAndUpdate(id, obj)
+        return product
+    } catch (error) {
+        return error
+    }
+}
+
 export async function addProdToCart(cartId, products){
     try {
         const cart = await cartManager.addProdsToCart(cartId, products)

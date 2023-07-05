@@ -7,6 +7,7 @@ import { generateCode} from "../utils/utils.js";
 import jwt from 'jsonwebtoken'
 import config from "../config.js";
 import { cookies } from "./users.controller.js";
+import {transporter} from '../messages/nodemailer.js';
 
 const productServices = new ProductServices()
 
@@ -85,14 +86,14 @@ export async function getAllProducts(req,res){
 export async function getProductById(req, res) {
     try {
         const product = await productServices.getProdById(req.params.idProduct);
-    if(product){
-        logger.info('Product found')
-        res.json({ product });
-    }else{
-        logger.error('Product not found')
-        logger.warning('Check the variables')
-        res.send('Product not found')
-    }
+        if(product){
+            logger.info('Product found')
+            res.json({ product });
+        }else{
+            logger.error('Product not found')
+            logger.warning('Check the variables')
+            res.send('Product not found')
+        }
     } catch (error) {
         logger.fatal('Error in getProductById')
         CustomError.createCustomError({
@@ -188,6 +189,21 @@ export async function deleteProdById(req, res) {
                 if(deleteProd){
                     logger.info('Product deleted successfully')
                     res.json({ message: 'Product deleted successfully', deleteProd })
+                    const messageOptions = {
+                        from:'Chillo E-Commerce',
+                        to: get.owner,
+                        subject: `Deleted Product`,
+                        html: `
+                        <h2>Hello ${get.owner},</h2>
+                        <h3>A product you own has been deleted</h3>
+                        `
+                        }
+                    if(!messageOptions){
+                        logger.error('Email not sent')
+                        logger.warning('Email not sent, check the variables')
+                        res.json({message: 'Email not sent'})
+                    }
+                    transporter.sendMail(messageOptions)
                 }else{
                     logger.error('product not found')
                     logger.warning('Check the variables')

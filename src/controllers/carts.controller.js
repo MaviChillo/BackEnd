@@ -1,13 +1,17 @@
-import { cartsModel } from '../dao/models/carts.model.js';
-import { productsModel } from '../dao/models/products.model.js';
 import { ticketModel } from '../dao/models/ticket.model.js';
-import {getCarts, addOne, getCartById, addProdToCart, updateProductQuantity, emptyCart, delProdFromCart, deleteCart} from '../services/cart.services.js';
+import {getCarts, addOne, getCartById, getCartByIdAndUpdate, addProdToCart, updateProductQuantity, emptyCart, delProdFromCart, deleteCart} from '../services/cart.services.js';
 import { cookies } from './users.controller.js';
 import jwt from 'jsonwebtoken';
 import CustomError from '../utils/errors/CustomError.js'
 import { ErrorsCause, ErrorsMessage, ErrorsName } from '../utils/errors/errors.enum.js'
 import logger from '../utils/winston.js';
 import config from '../config.js';
+import {ProductServices} from '../services/product.services.js';
+import {transporter} from '../messages/nodemailer.js';
+import TicketDTO from '../dto/ticket.dto.js';
+
+const productServices = new ProductServices()
+
 
 export async function getAllCarts(req,res){
     try {
@@ -80,7 +84,7 @@ export async function addProdsToCart(req, res){
         }
         const newProd = products.products[0].product
         const quantity = products.products[0].quantity
-        const productdb = await productsModel.findById(newProd)
+        const productdb = await productServices.getProdById(newProd)
         if(!productdb){
             logger.error('Product not found')
             logger.warning('Check product variables')
@@ -128,13 +132,13 @@ export async function updateProductsQuantity(req,res){
     try {
         const {cartId, prodId} = req.params
         const quantity = req.body.quantity
-        const cart = await cartsModel.findById({_id: cartId})
+        const cart = await getCartById(cartId)
         if(!cart){
             logger.error('Cart not found')
             logger.warning('Check cart variables')
             return res.json({message: 'Cart not found'})
         }
-        const prod = await productsModel.findById({_id: prodId})
+        const prod = await productServices.getProdById(prodId)
         if(!prod){
             logger.error('Product not found')
             logger.warning('Check product variables')
@@ -158,7 +162,6 @@ export async function updateProductsQuantity(req,res){
     }
 }
 
-
 export async function purchaseCart(req, res){
     try {
         const {cartId} = req.params
@@ -179,7 +182,7 @@ export async function purchaseCart(req, res){
             const stock = []
             const noStock = []            
             for (const p of prods){
-                const product = await productsModel.findById(p.product)
+                const product = await productServices.getProdById(p.product)
                 if (!product) {
                     logger.error('Product not found')
                     logger.warning('Check the id and try again')
@@ -196,9 +199,9 @@ export async function purchaseCart(req, res){
                 }
                 if(product.stock !== 0){
                     const newStock = product.stock - p.quantity
-                    await productsModel.findByIdAndUpdate(product._id, {stock: newStock},{new:true})
+                    await productServices.getProdByIdAndUpdate(product._id, {stock: newStock},{new:true})
                     stock.push(p)
-                    const price = product.price
+                    const price = product.price * p.quantity
                     total.push(price)
                 }
                 if(product.stock === 0){
@@ -210,7 +213,6 @@ export async function purchaseCart(req, res){
                 for (let key in total) {
                     sum += total[key]
                 }
-                console.log('sum',sum)
                 const token = cookies[cookies.length - 1]
                 let verify
                 if(token){
@@ -228,19 +230,52 @@ export async function purchaseCart(req, res){
                 }
                 await emptyCart(cartId)
                 await getCartById(cartId)
-                const noStockInCart = await cartsModel.findByIdAndUpdate(cartId, {products:noStock}, {new: true})
-                logger.info('in cart:', noStockInCart)
-                logger.info("Purchase successful. Here's your Ticket:", ticket)
+
+                await getCartByIdAndUpdate(cartId, {products: noStock}, {new: true})
+                const cart = await getCartById(cartId)
+                console.log('in cart:', cart)
+
+                const emailTicket = TicketDTO.getTicketFrom(ticket)
+
+                const messageOptions = {
+                    from:'Chillo E-Commerce',
+                    to: email,
+                    subject: `Successfull Purchase!`,
+                    html: `
+                    <h2>Hello ${verify.user[0].first_name} ${verify.user[0].last_name},</h2>
+                    <h3>Your purchase was successfull! Here's your ticket:</h3>
+                    <div>
+                        <ul>
+                            <li>Code: ${emailTicket.code}</li>
+                            <li>Purchase Date and Time: ${emailTicket.purchase_datetime}</li>
+                            <li>Total Amount: ${emailTicket.amount}</li>
+                        </ul>
+                    </div>
+                    `
+                }
+                if(!messageOptions){
+                    logger.error('Email not sent')
+                    logger.warning('Email not sent, check the variable messageOptions.')
+                    res.json({message: 'Email not sent'})
+                }
+                const send = transporter.sendMail(messageOptions)
+                if(!send){
+                    logger.error('Email not sent')
+                    logger.warning('Email not sent, check the variables')
+                    res.json({message: 'Email not sent'})
+                }
+
                 res.json({ message: "Purchase successful. Here's your Ticket:", ticket})
             }
         }
     } catch (error) {
-        logger.fatal('Error in purchaseCart')
-        CustomError.createCustomError({
-            name: ErrorsName.PURCHASE_CART_ERROR, 
-            message: ErrorsMessage.PURCHASE_CART_ERROR, 
-            cause: ErrorsCause.PURCHASE_CART_ERROR
-        })
+        // logger.fatal('Error in purchaseCart')
+        // CustomError.createCustomError({
+        //     name: ErrorsName.PURCHASE_CART_ERROR, 
+        //     message: ErrorsMessage.PURCHASE_CART_ERROR, 
+        //     cause: ErrorsCause.PURCHASE_CART_ERROR
+        // })
+        console.log(error)
     }
 }
 

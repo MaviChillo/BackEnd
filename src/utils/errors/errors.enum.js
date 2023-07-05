@@ -1,4 +1,3 @@
-
 export const ErrorsName ={
     //products
     GET_PRODUCTS_ERROR: 'Could not get',
@@ -17,9 +16,12 @@ export const ErrorsName ={
     DEL_PROD_FROM_CART_ERROR: 'Could not delete',
     DELETE_CART_ERROR: 'Could not delete',
     //users
+    GET_USERS_ERROR : 'Could not find users',
+    GET_USER_ERROR : 'Could not find user',
     SIGNUP_USER_ERROR: 'Could not singup',
     LOGIN_USER_ERROR: 'Could not login',
     LOGOUT_USER_ERROR: 'Could not logout',
+    DELETE_INACTIVE_USERS_ERROR: 'Could not delete user',
     //messages
     FORGOT_PASS_ERROR: 'Could not send email'
 }
@@ -42,9 +44,12 @@ export const ErrorsMessage ={
     DEL_PROD_FROM_CART_ERROR: 'Product could not be deleted from cart',
     DELETE_CART_ERROR: 'Cart could not be deleted',
     //users
+    GET_USERS_ERROR : 'Users could not be found',
+    GET_USER_ERROR : 'User could not be found',
     SIGNUP_USER_ERROR: 'User could not be signed up',
     LOGIN_USER_ERROR: 'User could not be logged in',
     LOGOUT_USER_ERROR: 'User could not be logged out',
+    DELETE_INACTIVE_USERS_ERROR: 'User could not be deleted',
     //messages
     FORGOT_PASS_ERROR: 'Email could not be sent'
 }
@@ -67,8 +72,11 @@ export const ErrorsCause ={
     DEL_PROD_FROM_CART_ERROR: 'Error caused in the carts.controller.js, function deleteProdsFromCart. Please check.',
     DELETE_CART_ERROR: 'Error caused in the carts.controller.js, function delCart. Please check.',
     //users
+    GET_USERS_ERROR : 'Error caused in the users.controller.js, function getAllUsers. Please check.',
+    GET_USER_ERROR : 'Error caused in the users.controller.js, function getUser. Please check.',
     SIGNUP_USER_ERROR: 'Error caused in the users.controller.js, function signupUser. Please check.',LOGIN_USER_ERROR: 'Error caused in the users.controller.js, function loginUser. Please check.',
     LOGOUT_USER_ERROR: 'Error caused in the users.controller.js, function logout. Please check.',
+    DELETE_INACTIVE_USERS_ERROR: 'Error caused in the users.controller.js, function deleteInactiveUsers. Please check.',
     //messages
     FORGOT_PASS_ERROR: 'Error caused in the messages.controller.js, function ForgotPass. Please check.'
 }

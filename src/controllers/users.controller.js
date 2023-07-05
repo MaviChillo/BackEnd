@@ -1,19 +1,67 @@
-import { usersModel } from '../dao/models/users.model.js';
 import jwt from 'jsonwebtoken'
 import {hashPassword, comparePasswords, generateToken} from '../utils/utils.js';
-import {getUserById, addOneUser, updateUserById} from '../services/users.services.js';
+import {getUsers, getAUser, getUserById, addOneUser, updateUserById, delInactiveUsers} from '../services/users.services.js';
+import UserDTO from '../dto/user.dto.js';
 import {addOne} from '../services/cart.services.js'
 import CustomError from '../utils/errors/CustomError.js';
 import {ErrorsCause, ErrorsMessage, ErrorsName} from '../utils/errors/errors.enum.js';
 import logger from '../utils/winston.js';
 import config from '../config.js';
+import {transporter} from '../messages/nodemailer.js';
 
+
+export async function getAllUsers(req,res){
+    try {
+        const users = await getUsers()
+        if(users){
+            const usersDto = UserDTO.getUsersFrom(users)
+            if(usersDto){
+                logger.info('Users found')
+                res.json({message: 'Users found', usersDto})
+            }else{
+                logger.error('Users not found')
+                logger.warning('Check variables')
+                res.json({message: 'Users not found'})
+            }
+        }
+    } catch (error) {
+        logger.fatal('Error in getAllUsers')
+        CustomError.createCustomError({
+            name: ErrorsName.GET_USERS_ERROR, 
+            message: ErrorsMessage.GET_USERS_ERROR, 
+            cause: ErrorsCause.GET_USERS_ERROR
+        })
+    }
+}
+
+export async function getUser(email, req, res){
+    try {
+        const user = await getAUser(email)
+        if(user){
+            const userDto = UserDTO.getUserFrom(user)
+            if(userDto){
+                logger.info('User found')
+                console.log(userDto)
+                return userDto
+            }else{
+                logger.error('User not found')
+                logger.warning('Check variables')
+            }
+        }
+    } catch (error) {
+        logger.fatal('Error in getUser')
+        CustomError.createCustomError({
+            name: ErrorsName.GET_USER_ERROR, 
+            message: ErrorsMessage.GET_USER_ERROR, 
+            cause: ErrorsCause.GET_USER_ERROR
+        })
+    }
+}
 
 export async function signupUser(req,res){
     try {
         const {email, password} = req.body
-        // console.log(req.body)
-        const user = await usersModel.find({email})
+        const user = await getAUser(email)
         if(user.length!==0){
             logger.error('This user already exists')
             logger.warning('Check your email')
@@ -46,7 +94,7 @@ export const cookies = []
 export async function loginUser(req,res){
     try {
         const {email, password} = req.body
-        const user = await usersModel.find({email})
+        const user = await getAUser(email)
         if(user.length !==0){
             const isPass = await comparePasswords(password, user[0].password)
             if(isPass){
@@ -66,7 +114,7 @@ export async function loginUser(req,res){
                     if(user[0].role === "Admin"){
                         //pasar login a last_connection
                         const last = new Date().toLocaleString()
-                        const lastConnection = await updateUserById({_id: user[0]._id}, {last_connection: last})
+                        const lastConnection = await updateUserById({_id: user[0]._id}, {last_connection: last}, {new: true})
                         console.log('lastConnection',lastConnection)
                         logger.info('Admin logged')
                         res.redirect('/admin')
@@ -74,7 +122,7 @@ export async function loginUser(req,res){
                     if(user[0].role === "Premium"){
                         //pasar login a last_connection
                         const last = new Date().toLocaleString()
-                        const lastConnection = await updateUserById({_id: user[0]._id}, {last_connection: last})
+                        const lastConnection = await updateUserById({_id: user[0]._id}, {last_connection: last}, {new: true})
                         console.log('lastConnection',lastConnection)
                         logger.info('Premium logged')
                         res.redirect('/premium')
@@ -82,7 +130,7 @@ export async function loginUser(req,res){
                     if(user[0].role === "User"){
                         //pasar login a last_connection
                         const last = new Date().toLocaleString()
-                        const lastConnection = await updateUserById({_id: user[0]._id}, {last_connection: last})
+                        const lastConnection = await updateUserById({_id: user[0]._id}, {last_connection: last}, {new: true})
                         console.log('lastConnection',lastConnection)
                         logger.info('User logged')
                         res.redirect('/products')
@@ -118,7 +166,7 @@ export async function changePassword(req,res){
     }else{
         const verify = jwt.verify(token, config.jwt_key)
         const email = verify.email
-        const find = await usersModel.find({email: email})
+        const find = await getAUser(email)
         if(!find){
             logger.error('Could not find user with that email adress')
             logger.warning('Check your variables')
@@ -126,7 +174,7 @@ export async function changePassword(req,res){
         }
         const {newPass, repeatPass} = req.body
         if(!newPass || !repeatPass){
-            logger.error('Password not found')
+            logger.error('Missing data')
             logger.warning('Check your variables')
             res.json({message: 'Please fill all the boxes'})
         }
@@ -136,21 +184,29 @@ export async function changePassword(req,res){
             res.json({message: 'Password do not match'})
         }
         const hash = await hashPassword(newPass)
-        const compare = await comparePasswords(find[0].password, hash)
+        const compare = await comparePasswords(newPass, find[0].password)
         if(compare === true){
             logger.error('Old Password')
             logger.warning('Please use a password you have not used before')
-            res.json({message: 'Old Password'})
+            res.json({message: 'Please use a password you have not used before'})
         }
-        await usersModel.findOneAndUpdate({email:email}, {password:hash}, {new:true})
-        res.redirect('/successChangePassword')
+        let json = JSON.stringify(find[0]._id)
+        json = await JSON.parse(json)
+        const update = await updateUserById({_id: json}, {password:hash}, {new:true})
+        if(!update){
+            logger.error('Could not update')
+            logger.warning('User could not be updated, check variables and try again.')
+        }else{
+            logger.info('Password changed successfully')
+            res.redirect('/successChangePassword')
+        }
     }
 }
 
 
 export async function changeRole(req,res){
     const {uid} = req.params
-    const find = await usersModel.findById({_id: uid})
+    const find = await getUserById(uid)
     if(!find){
         logger.error('User not found')
         logger.warning('There is no user with that id')
@@ -162,19 +218,18 @@ export async function changeRole(req,res){
         res.json({message: 'Cannot change role'})
     }
     if(find.role === 'Premium'){
-        const changeRole = await usersModel.findByIdAndUpdate({_id: uid}, {role: "User"})
+        const changeRole = await updateUserById({_id: uid}, {role: "User"})
         if(!changeRole){
             logger.error('Could not change role')
             logger.warning('Role could not be changed, check the variables')
             res.json({message: 'Could not change role'})
         }
-        const newRole = await usersModel.findById({_id: uid})
-        logger.info('Roled changed to: User')
+        const newRole = await getUserById(uid)
+        logger.info('Role changed to: User')
         res.json({message: 'Roled changed to: User', newRole})
     }
     if(find.role === 'User'){
-        const findDocs = await usersModel.findById({_id: uid})
-        // console.log(findDocs.documents)
+        const findDocs = await getUserById(uid)
         const docs = findDocs.documents
         let str
         let array = []
@@ -197,13 +252,13 @@ export async function changeRole(req,res){
             logger.warning('You are missing some documents')
             res.json({message: 'Could not change role to premium'})
         }else{
-            const changeRole = await usersModel.findByIdAndUpdate({_id: uid}, {role: "Premium"})
+            const changeRole = await updateUserById({_id: uid}, {role: "Premium"})
             if(!changeRole){
                 logger.error('Could not change role')
                 logger.warning('Role could not be changed, check the variables')
                 res.json({message: 'Could not change role'})
             }
-            const newRole = await usersModel.findById({_id: uid})
+            const newRole = await getUserById(uid)
             logger.info('Roled changed to: Premium')
             res.json({message: 'Roled changed to: Premium', newRole})
         }
@@ -312,20 +367,38 @@ export async function uploadDocs(req, res){
         }
 
         if(arrayPics){
-            const find = await getUserById({_id: verify.user[0]._id})
-            find.documents = [...find.documents, ...arrayPics]
-            await find.save()
-            await updateUserById({_id: verify.user[0]._id}, find)
-            console.log('find', find)
-            res.redirect('/filesUploaded')
+            const find = await getUserById(verify.user[0]._id)
+            if(find.documents.length !== 0){
+                find.documents = [...find.documents, ...arrayPics]
+                await find.save()
+                await updateUserById({_id: verify.user[0]._id}, find)
+                logger.info('Files uploaded successfully', find)
+                res.redirect('/filesUploaded')
+            }else{
+                find.documents = [...arrayPics]
+                await find.save()
+                await updateUserById({_id: verify.user[0]._id}, find)
+                logger.info('Files uploaded successfully', find)
+                res.redirect('/filesUploaded')
+            }
         }
         if(arrayDocs){
-            const find = await getUserById({_id: verify.user[0]._id})
-            find.documents = [...find.documents, ...arrayDocs]
-            await find.save()
-            await updateUserById({_id: verify.user[0]._id}, find)
-            console.log('find', find)
-            res.redirect('/filesUploaded')
+            const find = await getUserById(verify.user[0]._id)
+            if(find.documents.length !== 0){
+                find.documents = [...find.documents, ...arrayDocs]
+                await find.save()
+                await updateUserById({_id: verify.user[0]._id}, find)
+                logger.info('Files uploaded successfully')
+                console.log(find)
+                res.redirect('/filesUploaded')
+            }else{
+                find.documents = [...arrayDocs]
+                await find.save()
+                await updateUserById({_id: verify.user[0]._id}, find)
+                logger.info('Files uploaded successfully')
+                console.log(find)
+                res.redirect('/filesUploaded')
+            }
         }
         if(!arrayPics && !arrayDocs){
             logger.error('Could not submit documents or upload files')
@@ -350,7 +423,7 @@ export async function logout(req,res){
     try {
         if(req.session.logged){
             const email = req.session.email
-            const user = await usersModel.find({email})
+            const user = await getAUser(email)
             let uId = user[0]._id
             let _id = JSON.stringify(uId)
             _id = JSON.parse(_id)
@@ -359,10 +432,9 @@ export async function logout(req,res){
                     logger.error('Could not logout')
                 }else{
                     //pasar logout a last_connection
-                    console.log('id', _id)
                     const last = new Date().toLocaleString()
                     const lastConnection = await updateUserById(_id, {last_connection: last})
-                    console.log('lastConnection',lastConnection)
+                    console.log('lastConnection', lastConnection.last_connection)
                     logger.info('Logged out')
                     res.clearCookie('token').redirect("/login");
                 } 
@@ -376,6 +448,57 @@ export async function logout(req,res){
             name: ErrorsName.LOGOUT_USER_ERROR, 
             message: ErrorsMessage.LOGOUT_USER_ERROR, 
             cause: ErrorsCause.LOGOUT_USER_ERROR
+        })
+    }
+}
+
+export async function deleteInactiveUsers(req,res){
+    try {
+        const find = await getUsers()
+        find.forEach(user => {
+            const dateUser = user.last_connection
+            const dateToday = new Date()
+            const dateNumberUser = parseInt(dateUser[0]+dateUser[1])
+            const result = (dateToday.getDate() - dateNumberUser)
+            if(result === 2){
+                let _id = JSON.stringify(user._id)
+                _id = JSON.parse(_id)
+                const del = delInactiveUsers(_id)
+                if(del){
+                    logger.info('User deleted successfully')
+                    const messageOptions = {
+                        from:'Chillo E-Commerce',
+                        to: user.email,
+                        subject: `Deleted Account`,
+                        html: `
+                        <h2>Hello ${user.first_name} ${user.last_name},</h2>
+                        <h3>Your account has been deleted</h3>
+                        <p>Your account was deleted due to inactivity for 2 days.</p>
+                        `
+                        }
+                    if(!messageOptions){
+                        logger.error('Email not sent')
+                        logger.warning('Email not sent, check the variable messageOptions.')
+                        res.json({message: 'Email not sent'})
+                    }
+                    const send = transporter.sendMail(messageOptions)
+                    if(!send){
+                        logger.error('Email not sent')
+                        logger.warning('Email not sent, check the variables')
+                        res.json({message: 'Email not sent'})
+                    }
+                }
+            }else{
+                logger.info('User active')
+            }
+        });
+        res.json('Inactive user deleted successfully')
+    } catch (error) {
+        logger.fatal('Error in deleteInactiveUsers')
+        CustomError.createCustomError({
+            name: ErrorsName.DELETE_INACTIVE_USERS_ERROR, 
+            message: ErrorsMessage.DELETE_INACTIVE_USERS_ERROR, 
+            cause: ErrorsCause.DELETE_INACTIVE_USERS_ERROR
         })
     }
 }

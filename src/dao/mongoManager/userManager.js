@@ -2,6 +2,24 @@ import { usersModel } from "../models/users.model.js";
 
 export default class UsersManager{
 
+    async getAllUsers(){
+        try {
+            const users = await usersModel.find()
+            return users
+        } catch (error) {
+            return error
+        }
+    }
+
+        async getUserBy(email){
+        try {
+            const user = await usersModel.find({email})
+            return user
+        } catch (error) {
+            return error
+        }
+    }
+
     async findUsers(email, password){
         try {
             const user = await usersModel.find({email:email, password:password})
@@ -13,7 +31,7 @@ export default class UsersManager{
 
     async findUserById(id){
         try {
-            const user = await usersModel.findById(id)
+            const user = await usersModel.findById({_id: id})
             return user
         } catch (error) {
             return error
@@ -39,7 +57,25 @@ export default class UsersManager{
     }
 
     async deleteUser(id){
-        const deletedUser = await usersModel.findByIdAndDelete(id)
-        return deletedUser
+        try {
+            const deletedUser = await usersModel.findByIdAndDelete(id)
+            return deletedUser
+        } catch (error) {
+            return error
+        }
+    }
+
+    async delInactUsers(_id){
+        try {
+            const user = await usersModel.findById(_id)
+            if(user){
+                const del = await usersModel.deleteOne({_id: _id})
+                if(del){
+                    return del
+                }
+            }
+        } catch (error) {
+            return error
+        }
     }
 }
